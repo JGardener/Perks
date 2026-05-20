@@ -10,11 +10,14 @@ export const useBuilds = (userId: string | null) => {
   useEffect(() => {
     if (!userId) {
       setBuilds([]);
+      setLoading(false);
+      setError(null);
       return;
     }
 
     let cancelled = false;
     setLoading(true);
+    setError(null);
 
     supabase
       .from("builds")
