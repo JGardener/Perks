@@ -10,11 +10,14 @@ export const useCommunityGrades = (userId: string | null) => {
   useEffect(() => {
     if (!userId) {
       setGrades([]);
+      setLoading(false);
+      setError(null);
       return;
     }
 
     let cancelled = false;
     setLoading(true);
+    setError(null);
 
     supabase
       .from("perk_community_grades")
