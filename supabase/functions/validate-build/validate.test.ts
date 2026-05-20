@@ -51,3 +51,9 @@ Deno.test("non-object body fails", () => {
   assertEquals(result.valid, false);
   assertEquals(result.errors, ["body must be an object"] );
 });
+
+Deno.test("whitespace-only perk fails", () => {
+  const result = validateBuild({ role: "survivor", perks: ["  "] });
+  assertEquals(result.valid, false);
+  assertEquals(result.errors, ["perks[0] must be a non-empty string or null"]);
+});
