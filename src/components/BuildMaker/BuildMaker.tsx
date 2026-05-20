@@ -1,0 +1,381 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { Perk } from "../../types/dbd";
+import { decodeBuild, encodeBuild } from "../../utils/buildShare";
+import { exportBuildImage } from "../../utils/exportCanvas";
+import { getPerkImageUrl, resolveDescription } from "../../utils/perkUtils";
+import styles from "./BuildMaker.module.scss";
+import { ExportToolbar } from "./ExportToolbar";
+
+const OCTAGON = "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)";
+
+// ── Flying ghost ──────────────────────────────────────────────────────────────
+
+interface FlyingPerkProps {
+  perk: Perk;
+  fromRect: DOMRect;
+  toRect: DOMRect;
+  onLand: () => void;
+}
+
+const FlyingPerk = ({ perk, fromRect, toRect, onLand }: FlyingPerkProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const onLandRef = useRef(onLand);
+  onLandRef.current = onLand;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const dx = toRect.left - fromRect.left;
+    const dy = toRect.top - fromRect.top;
+    const scale = toRect.width / fromRect.width;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const anim = el.animate(
+      [
+        { transform: "translate(0, 0) scale(1)" },
+        { transform: `translate(${dx}px, ${dy}px) scale(${scale})` },
+      ],
+      {
+        duration: reducedMotion ? 0 : 400,
+        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+        fill: "forwards",
+      },
+    );
+
+    anim.onfinish = () => onLandRef.current();
+    return () => anim.cancel();
+  }, [fromRect, toRect]);
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        position: "fixed",
+        left: fromRect.left,
+        top: fromRect.top,
+        width: fromRect.width,
+        height: fromRect.height,
+        clipPath: OCTAGON,
+        background: "var(--color-ember)",
+        padding: "3px",
+        pointerEvents: "none",
+        zIndex: 999,
+        transformOrigin: "0 0",
+        boxSizing: "border-box",
+      }}
+    >
+      <img
+        src={getPerkImageUrl(perk.image)}
+        alt=""
+        style={{
+          width: "100%",
+          height: "100%",
+          clipPath: OCTAGON,
+          objectFit: "cover",
+          display: "block",
+        }}
+        onError={(e) => (e.currentTarget.src = "/perk-placeholder.svg")}
+      />
+    </div>
+  );
+};
+
+// ── BuildMaker ────────────────────────────────────────────────────────────────
+
+interface BuildMakerProps {
+  perks: Perk[];
+  role: "survivor" | "killer";
+  characterMap: Record<number, string>;
+  hasRatings: boolean;
+  onExportTierList: () => void;
+}
+
+interface Flight {
+  perk: Perk;
+  fromRect: DOMRect;
+  toRect: DOMRect;
+  targetIdx: number;
+}
+
+export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTierList }: BuildMakerProps) => {
+  const [slots, setSlots] = useState<(Perk | null)[]>([null, null, null, null]);
+  const [search, setSearch] = useState("");
+  const [flight, setFlight] = useState<Flight | null>(null);
+
+  const slotRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
+  const hydrated = useRef(false);
+  const prevRoleRef = useRef(role);
+
+  // Clear build state when role changes from outside
+  useEffect(() => {
+    if (prevRoleRef.current === role) return;
+    prevRoleRef.current = role;
+    setSlots([null, null, null, null]);
+    setSearch("");
+    setFlight(null);
+  }, [role]);
+
+  const filteredPerks = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return perks;
+    return perks.filter((p) => {
+      const description = resolveDescription(p.description, p.tunables).replace(/<[^>]*>/g, " ").toLowerCase();
+      const character = p.character !== null ? (characterMap[p.character] ?? "").toLowerCase() : "";
+      return (
+        p.name.toLowerCase().includes(q) ||
+        character.includes(q) ||
+        description.includes(q)
+      );
+    });
+  }, [perks, search, characterMap]);
+
+  // Include in-flight perk in inBuild so its picker item dims during flight
+  const inBuild = useMemo(() => {
+    const set = new Set(slots.filter(Boolean).map((p) => p!.name));
+    if (flight) set.add(flight.perk.name);
+    return set;
+  }, [slots, flight]);
+
+  const isFull = inBuild.size >= 4;
+
+  // Hydrate build from URL once perks are loaded (runs once)
+  useEffect(() => {
+    if (hydrated.current) return;
+    if (!perks.length) return;
+    hydrated.current = true;
+    const result = decodeBuild(window.location.search, perks);
+    if (!result) return;
+    setSlots(result.slots);
+  }, [perks]);
+
+  // Keep URL in sync with build state
+  useEffect(() => {
+    window.history.replaceState(null, "", "?" + encodeBuild(role, slots));
+  }, [role, slots]);
+
+  const removeSlot = (i: number) => {
+    setSlots((prev) => {
+      const next = [...prev];
+      next[i] = null;
+      return next;
+    });
+  };
+
+  const handlePickerClick = (perk: Perk, buttonEl: HTMLButtonElement) => {
+    if (inBuild.has(perk.name)) {
+      setSlots((prev) => prev.map((s) => (s?.name === perk.name ? null : s)));
+      return;
+    }
+
+    if (isFull || flight) return;
+
+    const targetIdx = slots.findIndex((s) => s === null);
+    const slotEl = slotRefs.current[targetIdx];
+    const octaEl = buttonEl.querySelector("[data-octa]") as HTMLElement | null;
+
+    if (!slotEl || !octaEl) {
+      setSlots((prev) => {
+        const next = [...prev];
+        next[targetIdx] = perk;
+        return next;
+      });
+      return;
+    }
+
+    setFlight({
+      perk,
+      fromRect: octaEl.getBoundingClientRect(),
+      toRect: slotEl.getBoundingClientRect(),
+      targetIdx,
+    });
+  };
+
+  const handleLand = () => {
+    if (!flight) return;
+
+    setSlots((prev) => {
+      const next = [...prev];
+      next[flight.targetIdx] = flight.perk;
+      return next;
+    });
+
+    const slotEl = slotRefs.current[flight.targetIdx];
+    if (slotEl) {
+      slotEl.animate(
+        [
+          { transform: "scale(0.7)", opacity: 0.6 },
+          { transform: "scale(1.12)" },
+          { transform: "scale(1)" },
+        ],
+        { duration: 300, easing: "cubic-bezier(0.34, 1.56, 0.64, 1)" },
+      );
+    }
+
+    setFlight(null);
+  };
+
+  const handleShareUrl = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).catch(() => {
+      const ta = document.createElement("textarea");
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    });
+  };
+
+  const handleCopyText = () => {
+    const roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
+    const lines = [`[${roleLabel} Build]`];
+    slots.forEach((perk, i) => lines.push(`${i + 1}. ${perk?.name ?? "—"}`));
+    const text = lines.join("\n");
+    navigator.clipboard.writeText(text).catch(() => {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    });
+  };
+
+  return (
+    <div className={styles.buildMaker}>
+      {flight && (
+        <FlyingPerk
+          perk={flight.perk}
+          fromRect={flight.fromRect}
+          toRect={flight.toRect}
+          onLand={handleLand}
+        />
+      )}
+
+      {/* Left panel: slots, summary, exports */}
+      <div className={styles.leftPanel}>
+        <div className={styles.buildSlots}>
+          {slots.map((perk, i) => (
+            <div key={i} className={styles.slot}>
+              <div
+                ref={(el) => { slotRefs.current[i] = el; }}
+                className={styles["slot__octa"]}
+                data-filled={String(!!perk)}
+                onClick={() => perk && removeSlot(i)}
+                role={perk ? "button" : undefined}
+                tabIndex={perk ? 0 : undefined}
+                onKeyDown={(e) => e.key === "Enter" && perk && removeSlot(i)}
+                title={perk ? `Remove ${perk.name}` : "Empty"}
+                aria-label={perk ? `Remove ${perk.name}` : "Empty perk slot"}
+              >
+                {perk ? (
+                  <img
+                    className={styles["slot__img"]}
+                    style={{ clipPath: OCTAGON }}
+                    src={getPerkImageUrl(perk.image)}
+                    alt={perk.name}
+                    onError={(e) => (e.currentTarget.src = "/perk-placeholder.svg")}
+                  />
+                ) : (
+                  <span className={styles["slot__plus"]}>+</span>
+                )}
+              </div>
+              <span className={styles["slot__name"]}>{perk?.name ?? " "}</span>
+            </div>
+          ))}
+        </div>
+
+        {inBuild.size > 0 && (
+          <div className={styles.summary}>
+            {slots.filter(Boolean).map((perk) => (
+              <div key={perk!.name} className={styles["summary__row"]}>
+                <div className={styles["summary__iconWrap"]}>
+                  <img
+                    className={styles["summary__icon"]}
+                    style={{ clipPath: OCTAGON }}
+                    src={getPerkImageUrl(perk!.image)}
+                    alt={perk!.name}
+                    onError={(e) => (e.currentTarget.src = "/perk-placeholder.svg")}
+                  />
+                </div>
+                <div className={styles["summary__body"]}>
+                  <h3 className={styles["summary__name"]}>{perk!.name}</h3>
+                  <p
+                    className={styles["summary__description"]}
+                    dangerouslySetInnerHTML={{ __html: resolveDescription(perk!.description, perk!.tunables) }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <ExportToolbar
+          onShareUrl={handleShareUrl}
+          onCopyText={handleCopyText}
+          onDownloadImage={() => exportBuildImage(slots, role)}
+          buildActive={inBuild.size > 0}
+          onExportTierList={hasRatings ? onExportTierList : undefined}
+        />
+
+        {inBuild.size > 0 && (
+          <div className={styles.clearRow}>
+            <button
+              className={styles.clearBtn}
+              onClick={() => setSlots([null, null, null, null])}
+            >
+              Clear Build
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Right panel: search + picker */}
+      <div className={styles.rightPanel}>
+        <div className={styles.searchRow}>
+          <input
+            className={styles.searchInput}
+            type="search"
+            placeholder="Search perks…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.picker}>
+          {filteredPerks.map((perk) => {
+            const active = inBuild.has(perk.name);
+            const dimmed = !active && isFull;
+            return (
+              <button
+                key={perk.name}
+                className={`${styles["pickerItem"]} ${active ? styles["pickerItem--active"] : ""} ${dimmed ? styles["pickerItem--dimmed"] : ""}`}
+                onClick={(e) => handlePickerClick(perk, e.currentTarget)}
+                disabled={dimmed}
+                title={perk.name}
+              >
+                <div
+                  className={styles["pickerItem__octa"]}
+                  data-active={String(active)}
+                  data-octa
+                  style={{ opacity: flight?.perk.name === perk.name ? 0 : 1 }}
+                >
+                  <img
+                    className={styles["pickerItem__img"]}
+                    style={{ clipPath: OCTAGON }}
+                    src={getPerkImageUrl(perk.image)}
+                    alt={perk.name}
+                    onError={(e) => (e.currentTarget.src = "/perk-placeholder.svg")}
+                  />
+                </div>
+                <span className={styles["pickerItem__name"]}>{perk.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};

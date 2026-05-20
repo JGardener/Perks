@@ -1,0 +1,343 @@
+$octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+
+// ── Two-panel layout ──────────────────────────────────────────────────────────
+
+.buildMaker {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 32px 48px;
+  align-items: start;
+}
+
+.leftPanel {
+  position: sticky;
+  top: 24px;
+}
+
+.rightPanel {
+  min-width: 0;
+}
+
+// ── Build slots ───────────────────────────────────────────────────────────────
+
+.buildSlots {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 110px;
+
+  &__octa {
+    width: 100px;
+    height: 100px;
+    clip-path: $octagon;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+
+    &[data-filled="false"] {
+      background: #1c1c1c;
+      cursor: default;
+    }
+
+    &[data-filled="true"] {
+      background: var(--color-ember);
+      cursor: pointer;
+
+      &:hover {
+        background: var(--color-blood);
+      }
+    }
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  &__plus {
+    color: var(--color-ember-dim);
+    font-size: 1.8rem;
+    line-height: 1;
+    user-select: none;
+  }
+
+  &__name {
+    font-family: var(--font-label);
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-parchment-dim);
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// ── Build summary ─────────────────────────────────────────────────────────────
+
+.summary {
+  border: 1px solid var(--color-ember-dim);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 4px;
+
+  &__row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-ember-dim);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__iconWrap {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: var(--color-ember);
+    clip-path: $octagon;
+    padding: 3px;
+  }
+
+  &__icon {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-ember);
+    margin: 0 0 6px;
+  }
+
+  &__description {
+    font-family: var(--font-label);
+    font-size: 0.9rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--secondary-text-color);
+    margin: 0;
+
+    :global(span) {
+      color: var(--color-ember);
+      font-weight: 400;
+    }
+  }
+}
+
+// ── Clear ─────────────────────────────────────────────────────────────────────
+
+.clearRow {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.clearBtn {
+  background: none;
+  border: 1px solid var(--color-ember-dim);
+  border-radius: 4px;
+  color: var(--color-parchment-dim);
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  padding: 6px 16px;
+  text-transform: uppercase;
+  transition: border-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    border-color: var(--color-blood);
+    color: var(--color-blood);
+  }
+}
+
+// ── Search ────────────────────────────────────────────────────────────────────
+
+.searchRow {
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  width: 100%;
+  background: var(--color-ash);
+  border: 1px solid var(--color-ember-dim);
+  border-radius: 4px;
+  color: var(--primary-text-color);
+  font-family: var(--font-label);
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  padding: 8px 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+
+  &:focus {
+    border-color: var(--color-ember);
+  }
+
+  &::placeholder {
+    color: var(--color-parchment-dim);
+    opacity: 0.6;
+  }
+
+  &::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+}
+
+// ── Perk picker ───────────────────────────────────────────────────────────────
+
+.picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 12px;
+}
+
+.pickerItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 4px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(232, 151, 58, 0.06);
+  }
+
+  &--active {
+    cursor: pointer;
+  }
+
+  &--dimmed {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  &__octa {
+    width: 64px;
+    height: 64px;
+    clip-path: $octagon;
+    padding: 3px;
+    background: var(--color-ember-dim);
+    transition: background 0.15s ease;
+
+    &[data-active="true"] {
+      background: var(--color-ember);
+      box-shadow: 0 0 10px rgba(232, 151, 58, 0.4);
+    }
+  }
+
+  &:hover:not(:disabled) &__octa {
+    background: var(--color-ember);
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  &__name {
+    font-family: var(--font-label);
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-parchment-dim);
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    .pickerItem--active & {
+      color: var(--color-ember);
+    }
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+
+@media (max-width: 900px) {
+  .buildMaker {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 16px 24px 48px;
+  }
+
+  .leftPanel {
+    position: static;
+  }
+
+  .buildSlots {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .buildMaker {
+    padding: 12px 12px 32px;
+  }
+
+  .buildSlots {
+    gap: 12px;
+  }
+
+  .slot {
+    width: 90px;
+
+    &__octa {
+      width: 80px;
+      height: 80px;
+    }
+  }
+
+  .summary {
+    &__row {
+      padding: 12px 14px;
+      gap: 12px;
+    }
+
+    &__iconWrap {
+      width: 40px;
+      height: 40px;
+    }
+  }
+}

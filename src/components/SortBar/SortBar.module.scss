@@ -1,0 +1,70 @@
+.sortBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0 0 24px;
+
+  &__label {
+    font-family: var(--font-label);
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--secondary-text-color);
+    white-space: nowrap;
+  }
+
+  &__options {
+    display: flex;
+    gap: 6px;
+  }
+
+  &__option {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid var(--color-ember-dim);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-parchment-dim);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+
+    &:hover {
+      border-color: var(--color-ember);
+      color: var(--color-ember);
+    }
+
+    &--active {
+      border-color: var(--color-ember);
+      background: var(--color-ember);
+      color: var(--color-void);
+    }
+  }
+
+  &__direction {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-ember-dim);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-parchment-dim);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      border-color: var(--color-ember);
+      color: var(--color-ember);
+    }
+  }
+}

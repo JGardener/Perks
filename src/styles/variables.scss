@@ -1,0 +1,26 @@
+:root {
+  // Core palette — pulled from DBD's in-game UI feel
+  --color-void: #0a0a0a;          // The Entity's realm: near-black
+  --color-ash: #111111;           // Card backgrounds
+  --color-ember: #e8973a;         // Amber — DBD's primary perk UI colour
+  --color-ember-dim: #6b4318;     // Dimmed ember for subtle borders
+  --color-blood: #8b1a1a;         // Deep red — danger, blood
+  --color-parchment: #d4c5a9;     // Aged paper — primary text
+  --color-parchment-dim: #a8957e; // Muted parchment — secondary text
+
+  // Semantic aliases
+  --page-background: var(--color-void);
+  --card-background: var(--color-ash);
+  --card-border: var(--color-ember-dim);
+  --primary-text-color: var(--color-parchment);
+  --secondary-text-color: var(--color-parchment-dim);
+  --accent-color: var(--color-ember);
+
+  // Glows
+  --glow-ember: 0 0 10px rgba(232, 151, 58, 0.35), 0 0 30px rgba(232, 151, 58, 0.1);
+  --glow-ember-hover: 0 0 18px rgba(232, 151, 58, 0.6), 0 0 50px rgba(232, 151, 58, 0.2);
+
+  // Fonts
+  --font-heading: "Cinzel", serif;
+  --font-label: "Oswald", sans-serif;
+}
