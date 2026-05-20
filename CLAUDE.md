@@ -33,17 +33,35 @@ src/
   styles/       # Global styles and variables
   utils/        # Utility functions
 scripts/        # One-time dev utilities (not part of the app bundle)
+supabase/
+  functions/    # Edge Functions (Deno)
+  config.toml   # Edge Function settings (verify_jwt per function)
+docs/
+  adr/          # Architecture Decision Records
+  superpowers/
+    plans/      # Implementation plans
 ```
 
-## Current State (as of 2026-05-19)
+## Current State (as of 2026-05-20)
 
-Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, filter by rating, mobile responsiveness, stats view, and export/share are all done.
+Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, filter by rating, mobile responsiveness, stats view, export/share, saved builds backend, and community grade aggregation are all done.
 
 ### Data & API
 
 - `src/services/dbdApi.ts` — `getAllPerks()` (returns `Record<string, Perk>`), `getCharacters()`. Proxies through Vite via `/api`.
 - `src/services/supabase.ts` — Supabase client initialised from `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`.
-- `src/types/dbd.ts` — `Perk` (`name`, `description`, `character`, `role`, `image`, `categories`), `Character`, `Grade` (A–F), `PerkCategory` (14-value union type). `categories` is `PerkCategory[] | null` — some perks return `null` from the API.
+- `src/types/dbd.ts` — `Perk`, `Character`, `Grade` (A–F), `PerkCategory` (14-value union), `Profile`, `Build`, `CommunityGrade`.
+
+### Supabase Schema
+
+- **`public.ratings`** — `id`, `user_id` (FK→auth.users), `perk_name`, `grade`, `updated_at`. RLS: owner manages own rows.
+- **`public.profiles`** — `id` (PK/FK→auth.users), `display_name`, `created_at`. Auto-created on sign-up via `on_auth_user_created` trigger (SECURITY DEFINER; populates `display_name` from `raw_user_meta_data`). RLS: owner SELECT/INSERT/UPDATE.
+- **`public.builds`** — `id`, `user_id`, `name`, `role` (CHECK: survivor/killer), `perks` (JSONB array ≤4), `is_public` (boolean, default false), `created_at`, `updated_at`. Indexes on `user_id` and partial `(created_at DESC) WHERE is_public`. CHECK constraints on name length (1–100) and perks structure. RLS: owner manages own; anyone reads public.
+- **`public.perk_community_grades`** (view) — aggregates `perk_name`, `grade`, `COUNT(*)` across all users' ratings. `security_invoker=off` bypasses per-user RLS. `authenticated` role: SELECT only. `anon`: no access.
+
+### Edge Functions
+
+- `supabase/functions/validate-build/` — validates `{ role, perks }` structure server-side. `verify_jwt=true` (config.toml). Pure logic in `validate.ts` (10 Deno unit tests); HTTP handler in `index.ts` with CORS + OPTIONS preflight.
 
 ### Hooks
 
@@ -51,7 +69,9 @@ Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, f
 - `src/hooks/usePerks.ts` — returns `{ perks, loading, error }` (array of all perks).
 - `src/hooks/useCharacters.ts` — returns `{ characterMap, loading, error }` (numeric ID → name).
 - `src/hooks/useAuth.ts` — subscribes to Supabase auth state; exposes `user`, `loading`, `signIn`, `signUp`, `signOut`.
-- `src/hooks/useRatings.ts` — A–F grade ratings. Authenticated users read/write to Supabase (`perk_ratings` table, RLS by `user_id`). Unauthenticated users fall back to `localStorage`. First login auto-migrates local ratings to Supabase. Writes are optimistic.
+- `src/hooks/useRatings.ts` — A–F grade ratings. Authenticated users read/write to Supabase (`ratings` table, RLS by `user_id`). Unauthenticated users fall back to `localStorage`. First login auto-migrates local ratings to Supabase. Writes are optimistic.
+- `src/hooks/useBuilds.ts` — saved builds CRUD. Accepts `userId`. `saveBuild(name, role, perks, isPublic?)` validates via `validate-build` edge function then inserts; optimistic prepend. `deleteBuild(id)` guards on both `id` and `user_id`. Clears state on sign-out.
+- `src/hooks/useCommunityGrades.ts` — fetches `perk_community_grades` view for authenticated users. Returns `{ grades: CommunityGrade[], loading, error }`. Returns empty array for anon (view is auth-gated). Clears loading/error on sign-out.
 - `src/utils/perkUtils.ts` — `getPerkImageUrl(imagePath)` → `/perks/{filename}.png`.
 - `src/utils/categoryColors.ts` — `CATEGORY_COLORS` (Record mapping each `PerkCategory` slug to a hex color) and `getCategoryColor(categories)` helper. Colors applied to the octagonal perk icon border.
 - `src/utils/gradeColors.ts` — `GRADE_COLORS` (Record<Grade, hex>) and `GRADE_ORDER` (Record<Grade, number>) constants. Used by export canvas and stats chart.
@@ -97,3 +117,4 @@ Coverage: ~273 of 309 icons (~88%). Remaining ~36 are late-2024 chapters not yet
 ## Next Steps
 
 - **Random build generator** — a function that allows users to create a build from 4 randomly chosen perks.
+- **Saved builds UI** — surface `useBuilds` and `useCommunityGrades` in the frontend (Build tab: save/load, Stats tab: community distribution).
