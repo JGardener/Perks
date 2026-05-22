@@ -42,7 +42,7 @@ docs/
     plans/      # Implementation plans
 ```
 
-## Current State (as of 2026-05-20)
+## Current State (as of 2026-05-22)
 
 Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, filter by rating, mobile responsiveness, stats view, export/share, saved builds backend, and community grade aggregation are all done.
 
