@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react";
 import type { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
@@ -10,12 +11,18 @@ export const useAuth = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
+      if (session?.user) Sentry.setUser({ id: session.user.id });
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        Sentry.setUser({ id: session.user.id });
+      } else {
+        Sentry.setUser(null);
+      }
     });
 
     return () => subscription.unsubscribe();
