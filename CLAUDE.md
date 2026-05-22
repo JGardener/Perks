@@ -116,5 +116,5 @@ Coverage: ~273 of 309 icons (~88%). Remaining ~36 are late-2024 chapters not yet
 
 ## Next Steps
 
+- **Saved builds UI** *(next priority)* — surface `useBuilds` and `useCommunityGrades` in the frontend (Build tab: save/load, Stats tab: community distribution).
 - **Random build generator** — a function that allows users to create a build from 4 randomly chosen perks.
-- **Saved builds UI** — surface `useBuilds` and `useCommunityGrades` in the frontend (Build tab: save/load, Stats tab: community distribution).
