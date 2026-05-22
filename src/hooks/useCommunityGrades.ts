@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
 import type { CommunityGrade } from "../types/dbd";
+import { useToast } from "./useToast";
 
 export const useCommunityGrades = (userId: string | null) => {
+  const { showToast } = useToast();
   const [grades, setGrades] = useState<CommunityGrade[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +27,7 @@ export const useCommunityGrades = (userId: string | null) => {
       .then(({ data, error: err }) => {
         if (cancelled) return;
         if (err) {
-          setError(err.message);
+          showToast("Community grades unavailable", "info");
         } else {
           setGrades((data ?? []) as CommunityGrade[]);
         }

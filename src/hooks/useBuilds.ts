@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
 import type { Build } from "../types/dbd";
+import { useToast } from "./useToast";
 
 export const useBuilds = (userId: string | null) => {
+  const { showToast } = useToast();
   const [builds, setBuilds] = useState<Build[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +68,7 @@ export const useBuilds = (userId: string | null) => {
         .single();
 
       if (insertError) {
-        setError(insertError.message);
+        showToast("Failed to save build");
         return null;
       }
 
@@ -88,7 +90,7 @@ export const useBuilds = (userId: string | null) => {
         .eq("user_id", userId);
 
       if (deleteError) {
-        setError(deleteError.message);
+        showToast("Failed to delete build");
         return;
       }
 
