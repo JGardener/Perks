@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ErrorBoundary } from "../ErrorBoundary/ErrorBoundary";
 import { useCharacters } from "../../hooks/useCharacters";
 import { usePerks } from "../../hooks/usePerks";
 import { useRatings } from "../../hooks/useRatings";
@@ -110,13 +111,15 @@ export const PerkList = () => {
         aria-labelledby="tab-perks"
         hidden={activeTab !== "perks"}
       >
-        <PerkSection
-          role={activeRole}
-          perks={rolePerks}
-          characterMap={characterMap}
-          ratings={ratings}
-          onRate={setRating}
-        />
+        <ErrorBoundary label="Perks">
+          <PerkSection
+            role={activeRole}
+            perks={rolePerks}
+            characterMap={characterMap}
+            ratings={ratings}
+            onRate={setRating}
+          />
+        </ErrorBoundary>
       </div>
 
       <div
@@ -125,13 +128,15 @@ export const PerkList = () => {
         aria-labelledby="tab-build"
         hidden={activeTab !== "build"}
       >
-        <BuildMaker
-          perks={rolePerks}
-          role={activeRole}
-          characterMap={characterMap}
-          hasRatings={hasRatings}
-          onExportTierList={handleExportTierList}
-        />
+        <ErrorBoundary label="Build">
+          <BuildMaker
+            perks={rolePerks}
+            role={activeRole}
+            characterMap={characterMap}
+            hasRatings={hasRatings}
+            onExportTierList={handleExportTierList}
+          />
+        </ErrorBoundary>
       </div>
 
       <div
@@ -140,7 +145,9 @@ export const PerkList = () => {
         aria-labelledby="tab-stats"
         hidden={activeTab !== "stats"}
       >
-        <StatsView perks={perks} ratings={ratings} />
+        <ErrorBoundary label="Stats">
+          <StatsView perks={perks} ratings={ratings} />
+        </ErrorBoundary>
       </div>
     </main>
   );
