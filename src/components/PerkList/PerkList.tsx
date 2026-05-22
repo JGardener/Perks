@@ -17,16 +17,22 @@ function getRoleFromUrl(): Role {
 }
 
 export const PerkList = () => {
-  const { perks, loading: perksLoading, error: perksError } = usePerks();
-  const { characterMap, loading: charsLoading, error: charsError } = useCharacters();
+  const { perks, loading: perksLoading, error: perksError, retry: retryPerks } = usePerks();
+  const { characterMap, loading: charsLoading, error: charsError, retry: retryChars } = useCharacters();
   const { ratings, setRating } = useRatings();
   const [activeTab, setActiveTab] = useState<Tab>("perks");
   const [activeRole, setActiveRole] = useState<Role>(getRoleFromUrl);
 
   const error = perksError || charsError;
   const loading = perksLoading || charsLoading;
+  const retryAll = () => { retryPerks(); retryChars(); };
 
-  if (error) return <main className={styles.status}><p role="alert">{error}</p></main>;
+  if (error) return (
+    <main className={styles.status}>
+      <p role="alert">Failed to load perks. Please check your connection and try again.</p>
+      <button onClick={retryAll}>Try again</button>
+    </main>
+  );
   if (loading) return <main className={styles.status}><p aria-busy="true" aria-live="polite">Loading…</p></main>;
 
   const survivorPerks = perks.filter((p) => p.role === "survivor");

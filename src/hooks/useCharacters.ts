@@ -9,6 +9,6 @@ const fetchCharacterMap = async (): Promise<Record<number, string>> => {
 };
 
 export const useCharacters = () => {
-  const { data: characterMap, loading, error } = useAsyncData(fetchCharacterMap, {} as Record<number, string>);
-  return { characterMap, loading, error };
+  const { data: characterMap, loading, error, retry } = useAsyncData(fetchCharacterMap, {} as Record<number, string>);
+  return { characterMap, loading, error, retry };
 };
