@@ -3,19 +3,23 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useCharacters } from "../../hooks/useCharacters";
 import { usePerks } from "../../hooks/usePerks";
 import { useRatings } from "../../hooks/useRatings";
+import { useToast } from "../../hooks/useToast";
 import { PerkList } from "./PerkList";
 
 vi.mock("../../hooks/usePerks");
 vi.mock("../../hooks/useCharacters");
 vi.mock("../../hooks/useRatings");
+vi.mock("../../hooks/useToast", () => ({ useToast: vi.fn() }));
 
 const mockUsePerks = vi.mocked(usePerks);
 const mockUseCharacters = vi.mocked(useCharacters);
 const mockUseRatings = vi.mocked(useRatings);
+const mockUseToast = vi.mocked(useToast);
 
 beforeEach(() => {
   mockUseCharacters.mockReturnValue({ characterMap: {}, loading: false, error: "", retry: vi.fn() });
   mockUseRatings.mockReturnValue({ ratings: {}, setRating: vi.fn() });
+  mockUseToast.mockReturnValue({ showToast: vi.fn() });
 });
 
 describe("PerkList error state", () => {

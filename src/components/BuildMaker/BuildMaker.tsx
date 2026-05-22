@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Perk } from "../../types/dbd";
+import { useToast } from "../../hooks/useToast";
 import { decodeBuild, encodeBuild } from "../../utils/buildShare";
 import { exportBuildImage } from "../../utils/exportCanvas";
 import { getPerkImageUrl, resolveDescription } from "../../utils/perkUtils";
@@ -100,6 +101,7 @@ interface Flight {
 }
 
 export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTierList }: BuildMakerProps) => {
+  const { showToast } = useToast();
   const [slots, setSlots] = useState<(Perk | null)[]>([null, null, null, null]);
   const [search, setSearch] = useState("");
   const [flight, setFlight] = useState<Flight | null>(null);
@@ -315,7 +317,10 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
         <ExportToolbar
           onShareUrl={handleShareUrl}
           onCopyText={handleCopyText}
-          onDownloadImage={() => exportBuildImage(slots, role)}
+          onDownloadImage={async () => {
+            const ok = await exportBuildImage(slots, role);
+            if (!ok) showToast("Failed to export image");
+          }}
           buildActive={inBuild.size > 0}
           onExportTierList={hasRatings ? onExportTierList : undefined}
         />

@@ -59,7 +59,8 @@ function downloadCanvas(canvas: HTMLCanvasElement, filename: string) {
 export async function exportBuildImage(
   slots: (Perk | null)[],
   role: "survivor" | "killer",
-): Promise<void> {
+): Promise<boolean> {
+  try {
   await document.fonts.ready;
 
   const W = 640;
@@ -76,7 +77,8 @@ export async function exportBuildImage(
   const canvas = document.createElement("canvas");
   canvas.width = W;
   canvas.height = H;
-  const ctx = canvas.getContext("2d")!;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return false;
 
   // Background
   ctx.fillStyle = BG;
@@ -132,13 +134,18 @@ export async function exportBuildImage(
   });
 
   downloadCanvas(canvas, `bloodweb-build-${role}.png`);
+  return true;
+  } catch {
+    return false;
+  }
 }
 
 export async function exportTierListImage(
   perks: Perk[],
   ratings: Record<string, Grade>,
   role: "survivor" | "killer",
-): Promise<void> {
+): Promise<boolean> {
+  try {
   await document.fonts.ready;
 
   const grades = (Object.keys(GRADE_ORDER) as Grade[]).sort(
@@ -167,7 +174,7 @@ export async function exportTierListImage(
   }
 
   const activeGrades = grades.filter((g) => (grouped[g]?.length ?? 0) > 0);
-  if (activeGrades.length === 0) return;
+  if (activeGrades.length === 0) return true;
 
   // Calculate total canvas height
   let totalH = HEADER_H;
@@ -190,7 +197,8 @@ export async function exportTierListImage(
   const canvas = document.createElement("canvas");
   canvas.width = W;
   canvas.height = totalH;
-  const ctx = canvas.getContext("2d")!;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return false;
 
   // Background
   ctx.fillStyle = BG;
@@ -274,4 +282,8 @@ export async function exportTierListImage(
   }
 
   downloadCanvas(canvas, `bloodweb-tierlist-${role}.png`);
+  return true;
+  } catch {
+    return false;
+  }
 }

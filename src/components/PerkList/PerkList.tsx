@@ -3,6 +3,7 @@ import { ErrorBoundary } from "../ErrorBoundary/ErrorBoundary";
 import { useCharacters } from "../../hooks/useCharacters";
 import { usePerks } from "../../hooks/usePerks";
 import { useRatings } from "../../hooks/useRatings";
+import { useToast } from "../../hooks/useToast";
 import { exportTierListImage } from "../../utils/exportCanvas";
 import { BuildMaker } from "../BuildMaker/BuildMaker";
 import { PerkSection } from "../PerkSection/PerkSection";
@@ -21,6 +22,7 @@ export const PerkList = () => {
   const { perks, loading: perksLoading, error: perksError, retry: retryPerks } = usePerks();
   const { characterMap, loading: charsLoading, error: charsError, retry: retryChars } = useCharacters();
   const { ratings, setRating } = useRatings();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>("perks");
   const [activeRole, setActiveRole] = useState<Role>(getRoleFromUrl);
 
@@ -41,8 +43,9 @@ export const PerkList = () => {
   const rolePerks = activeRole === "survivor" ? survivorPerks : killerPerks;
   const hasRatings = Object.keys(ratings).length > 0;
 
-  const handleExportTierList = () => {
-    exportTierListImage(rolePerks, ratings, activeRole);
+  const handleExportTierList = async () => {
+    const ok = await exportTierListImage(rolePerks, ratings, activeRole);
+    if (!ok) showToast("Failed to export tier list");
   };
 
   return (
