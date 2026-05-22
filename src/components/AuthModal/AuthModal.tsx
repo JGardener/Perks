@@ -4,6 +4,7 @@ import styles from "./AuthModal.module.scss";
 
 interface AuthModalProps {
   onClose: () => void;
+  reason?: string;
 }
 
 type Mode = "signin" | "signup";
@@ -17,7 +18,7 @@ const GoogleIcon = () => (
   </svg>
 );
 
-export const AuthModal = ({ onClose }: AuthModalProps) => {
+export const AuthModal = ({ onClose, reason }: AuthModalProps) => {
   const { signIn, signUp, signInWithGoogle } = useAuth();
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
@@ -99,6 +100,8 @@ export const AuthModal = ({ onClose }: AuthModalProps) => {
         <button className={styles.close} onClick={onClose} aria-label="Close sign in dialog">
           ✕
         </button>
+
+        {reason && <p className={styles.reason}>{reason}</p>}
 
         <div className={styles.tabs} role="tablist" aria-label="Authentication mode">
           <button

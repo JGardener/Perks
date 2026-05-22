@@ -1,4 +1,6 @@
 import type { Grade, Perk } from "../../types/dbd";
+import { useAuthModal } from "../../context/AuthModalContext";
+import { useAuth } from "../../hooks/useAuth";
 import { getCategoryColor } from "../../utils/categoryColors";
 import { getPerkImageUrl, resolveDescription } from "../../utils/perkUtils";
 import styles from "./PerkCard.module.scss";
@@ -14,7 +16,11 @@ interface PerkCardProps {
 }
 
 export const PerkCard = ({ perk, characterName, rating, onRate, onClick }: PerkCardProps) => {
+  const { user } = useAuth();
+  const { openAuthModal } = useAuthModal();
   const categoryColor = getCategoryColor(perk.categories);
+  const handleGrade = (grade: Grade) =>
+    user ? onRate(rating === grade ? null : grade) : openAuthModal("Sign in to rate perks");
   return (
     <div
       className={`${styles.perkCard} ${rating ? styles["perkCard--rated"] : ""}`}
@@ -41,7 +47,7 @@ export const PerkCard = ({ perk, characterName, rating, onRate, onClick }: PerkC
             <button
               key={grade}
               className={`${styles["perkCard__grade"]} ${rating === grade ? styles["perkCard__grade--active"] : ""}`}
-              onClick={() => onRate(rating === grade ? null : grade)}
+              onClick={() => handleGrade(grade)}
               aria-label={`Rate ${perk.name} ${grade}`}
               aria-pressed={rating === grade}
             >

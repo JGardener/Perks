@@ -50,6 +50,15 @@
   }
 }
 
+.reason {
+  color: var(--color-ember);
+  font-size: 0.875rem;
+  text-align: center;
+  padding-bottom: 1rem;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--color-ember-dim);
+}
+
 .tabs {
   display: flex;
   border-bottom: 1px solid var(--color-ember-dim);

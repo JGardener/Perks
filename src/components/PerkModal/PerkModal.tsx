@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { Grade, Perk } from "../../types/dbd";
+import { useAuthModal } from "../../context/AuthModalContext";
+import { useAuth } from "../../hooks/useAuth";
 import { getCategoryColor } from "../../utils/categoryColors";
 import { getPerkImageUrl, resolveDescription } from "../../utils/perkUtils";
 import styles from "./PerkModal.module.scss";
@@ -46,6 +48,10 @@ export const PerkModal = ({ perk, characterName, rating, onRate, onClose }: Perk
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  const { user } = useAuth();
+  const { openAuthModal } = useAuthModal();
+  const handleGrade = (grade: Grade) =>
+    user ? onRate(rating === grade ? null : grade) : openAuthModal("Sign in to rate perks");
   const modalId = "perk-modal-title";
   const categoryColor = getCategoryColor(perk.categories);
 
@@ -92,7 +98,7 @@ export const PerkModal = ({ perk, characterName, rating, onRate, onClose }: Perk
             <button
               key={grade}
               className={`${styles.grade} ${rating === grade ? styles["grade--active"] : ""}`}
-              onClick={() => onRate(rating === grade ? null : grade)}
+              onClick={() => handleGrade(grade)}
               aria-label={`Rate ${perk.name} ${grade}`}
               aria-pressed={rating === grade}
             >

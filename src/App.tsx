@@ -1,17 +1,19 @@
 import "./App.css";
 import "./styles/global.scss";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { AuthModal } from "./components/AuthModal/AuthModal";
 import { PerkList } from "./components/PerkList/PerkList";
+import { AuthModalContext } from "./context/AuthModalContext";
 import { useAuth } from "./hooks/useAuth";
 
 function App() {
   const { user, loading, signOut } = useAuth();
-  const [showAuth, setShowAuth] = useState(false);
+  const [authReason, setAuthReason] = useState<string | undefined>(undefined);
+  const openAuthModal = useCallback((reason?: string) => setAuthReason(reason ?? ""), []);
 
   return (
-    <>
+    <AuthModalContext.Provider value={{ openAuthModal }}>
       <header className="app-header" aria-label="The Bloodweb">
         <div className="app-header__left" />
         <div className="app-header__center">
@@ -34,8 +36,10 @@ function App() {
         </div>
       </header>
       <PerkList />
-      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
-    </>
+      {authReason !== undefined && (
+        <AuthModal reason={authReason} onClose={() => setAuthReason(undefined)} />
+      )}
+    </AuthModalContext.Provider>
   );
 }
 
