@@ -1,0 +1,65 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal {
+  background: var(--color-surface, #1a1a1a);
+  border: 1px solid var(--color-ember);
+  padding: 2rem;
+  width: min(90vw, 360px);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.title {
+  font-family: "Cinzel", serif;
+  font-size: 1.1rem;
+  color: var(--color-ember);
+  margin: 0;
+}
+
+.body {
+  font-size: 0.85rem;
+  color: var(--color-parchment-dim);
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.cancelBtn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--color-parchment-dim);
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+
+  &:hover {
+    border-color: var(--color-parchment-dim);
+  }
+}
+
+.confirmBtn {
+  background: var(--color-blood, #8b1a1a);
+  border: none;
+  color: var(--color-parchment, #e8d5b7);
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+
+  &:hover {
+    filter: brightness(1.2);
+  }
+}

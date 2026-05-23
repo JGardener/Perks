@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Perk } from "../../types/dbd";
+import type { Build, Perk } from "../../types/dbd";
 import { useToast } from "../../hooks/useToast";
 import { decodeBuild, encodeBuild } from "../../utils/buildShare";
 import { exportBuildImage } from "../../utils/exportCanvas";
 import { getPerkImageUrl, resolveDescription } from "../../utils/perkUtils";
 import { SaveBuildModal } from "../SaveBuildModal/SaveBuildModal";
+import { SavedBuilds } from "../SavedBuilds/SavedBuilds";
 import styles from "./BuildMaker.module.scss";
 import { ExportToolbar } from "./ExportToolbar";
 
@@ -95,6 +96,8 @@ interface BuildMakerProps {
   userId: string | null;
   onOpenAuthModal: () => void;
   onSave: (name: string, perks: (string | null)[]) => Promise<void>;
+  builds: Build[];
+  onDelete: (id: string) => Promise<void>;
 }
 
 interface Flight {
@@ -104,7 +107,7 @@ interface Flight {
   targetIdx: number;
 }
 
-export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTierList, userId, onOpenAuthModal, onSave }: BuildMakerProps) => {
+export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTierList, userId, onOpenAuthModal, onSave, builds, onDelete }: BuildMakerProps) => {
   const { showToast } = useToast();
   const [slots, setSlots] = useState<(Perk | null)[]>([null, null, null, null]);
   const [search, setSearch] = useState("");
@@ -220,6 +223,16 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
       );
     }
 
+    setFlight(null);
+  };
+
+  const handleLoadBuild = (build: Build) => {
+    const perkMap = new Map(perks.map((p) => [p.name, p]));
+    const newSlots = Array.from({ length: 4 }, (_, i) => {
+      const name = build.perks[i] ?? null;
+      return name ? (perkMap.get(name) ?? null) : null;
+    });
+    setSlots(newSlots);
     setFlight(null);
   };
 
@@ -407,6 +420,17 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
           })}
         </div>
       </div>
+
+      <SavedBuilds
+        builds={builds}
+        role={role}
+        perks={perks}
+        userId={userId}
+        onOpenAuthModal={onOpenAuthModal}
+        isCurrentBuildEmpty={slots.every((s) => s === null)}
+        onLoad={handleLoadBuild}
+        onDelete={onDelete}
+      />
     </div>
   );
 };

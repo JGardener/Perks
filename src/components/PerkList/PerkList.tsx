@@ -27,7 +27,7 @@ export const PerkList = () => {
   const { ratings, setRating } = useRatings();
   const { showToast } = useToast();
   const { user } = useAuth();
-  const { saveBuild } = useBuilds(user?.id ?? null);
+  const { builds, saveBuild, deleteBuild } = useBuilds(user?.id ?? null);
   const { openAuthModal } = useAuthModal();
   const [activeTab, setActiveTab] = useState<Tab>("perks");
   const [activeRole, setActiveRole] = useState<Role>(getRoleFromUrl);
@@ -147,6 +147,8 @@ export const PerkList = () => {
             userId={user?.id ?? null}
             onOpenAuthModal={() => openAuthModal("Sign in to save builds")}
             onSave={(name, perkNames) => saveBuild(name, activeRole, perkNames, false)}
+            builds={builds}
+            onDelete={deleteBuild}
           />
         </ErrorBoundary>
       </div>
