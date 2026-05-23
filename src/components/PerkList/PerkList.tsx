@@ -148,7 +148,7 @@ export const PerkList = () => {
             onExportTierList={handleExportTierList}
             userId={user?.id ?? null}
             onOpenAuthModal={() => openAuthModal("Sign in to save builds")}
-            onSave={(name, perkNames) => { saveBuild(name, activeRole, perkNames, false); }}
+            onSave={async (name, perkNames) => { await saveBuild(name, activeRole, perkNames, false); }}
             builds={builds}
             onDelete={deleteBuild}
           />
