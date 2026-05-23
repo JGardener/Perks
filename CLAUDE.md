@@ -42,7 +42,7 @@ docs/
     plans/      # Implementation plans
 ```
 
-## Current State (as of 2026-05-22)
+## Current State (as of 2026-05-23)
 
 Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, filter by rating, mobile responsiveness, stats view, export/share, saved builds backend, and community grade aggregation are all done.
 
@@ -86,7 +86,7 @@ Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, f
 - `src/components/CategoryFilter/CategoryFilter.tsx` — row of category toggle buttons rendered below the sort bar. Each button is styled in its category color; active = solid fill. Doubles as a visual legend. `available` prop is derived per-role so only relevant categories appear. Shows a Clear button when any filter is active.
 - `src/components/SortBar/SortBar.tsx` — sort field (name / character / grade) + direction toggle. Full ARIA toolbar pattern (`role="toolbar"`, `role="group"`, `aria-pressed`).
 - `src/components/PerkList/PerkList.tsx` — top-level tab bar (Perks / Build / Stats) with `<main>` landmark and full ARIA tab pattern. Perks tab has Survivor / Killer sub-tabs.
-- `src/components/BuildMaker/BuildMaker.tsx` — 4-slot build composer. Role toggle (clears build on switch), octagonal slot display, keyword search (name + character + HTML-stripped description), dense perk picker grid. Clicking a perk triggers a FLIP animation (ghost flies to the target slot via Web Animations API); clicking again removes it. Build summary below slots shows each perk's full description. Respects `prefers-reduced-motion`. Integrates `ExportToolbar` for share URL, copy text, and image download. Reads `?role=&p0–p3=` on mount to restore a shared build.
+- `src/components/BuildMaker/BuildMaker.tsx` — 4-slot build composer. Role toggle (clears build on switch), octagonal slot display, keyword search (name + character + HTML-stripped description), dense perk picker grid. Clicking a perk triggers a FLIP animation (ghost flies to the target slot via Web Animations API); clicking again removes it. Build summary below slots shows each perk's full description. Respects `prefers-reduced-motion`. Integrates `ExportToolbar` for share URL, copy text, and image download. Reads `?role=&p0–p3=` on mount to restore a shared build. A `urlReady` ref gates the URL-sync effect so it never fires before hydration completes (prevents `?role=survivor&p0=...` being written on every fresh page load).
 - `src/components/BuildMaker/ExportToolbar.tsx` — three export buttons (Share URL, Copy Text, Download Image). Buttons show a 2-second "Copied!" / confirmation state after clipboard writes.
 - `src/components/AuthModal/AuthModal.tsx` — sign in / create account modal. Focus trap, Escape key handling, `aria-labelledby`, `role="alert"` on errors, `role="status"` on success, `autoComplete` attributes.
 - `src/components/RatingFilter/RatingFilter.tsx` — row of A–F + Unrated toggle buttons rendered below the category filter. Each grade has a distinct tier-list color (green → blue → amber → orange → light red → blood red). `active` is a `Set<Grade | "unrated">`; multi-select, composable with the category filter. Shows a Clear button when any filter is active.

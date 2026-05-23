@@ -116,6 +116,7 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
 
   const slotRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
   const hydrated = useRef(false);
+  const urlReady = useRef(false);
   const prevRoleRef = useRef(role);
 
   // Clear build state when role changes from outside
@@ -155,13 +156,15 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
     if (hydrated.current) return;
     if (!perks.length) return;
     hydrated.current = true;
+    urlReady.current = true;
     const result = decodeBuild(window.location.search, perks);
     if (!result) return;
     setSlots(result.slots);
   }, [perks]);
 
-  // Keep URL in sync with build state
+  // Keep URL in sync with build state (only after initial hydration)
   useEffect(() => {
+    if (!urlReady.current) return;
     window.history.replaceState(null, "", "?" + encodeBuild(role, slots));
   }, [role, slots]);
 
