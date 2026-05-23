@@ -29,7 +29,7 @@ function App() {
               </button>
             </>
           ) : (
-            <button className="app-header__auth-btn" onClick={() => setShowAuth(true)}>
+            <button className="app-header__auth-btn" onClick={() => openAuthModal()}>
               Sign In
             </button>
           ))}
