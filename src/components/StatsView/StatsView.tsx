@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import type { Grade, Perk } from "../../types/dbd";
+import type { CommunityGrade, Grade, Perk } from "../../types/dbd";
+import { getCommunityTopPerks } from "../../utils/communityPerks";
 import { GRADE_ORDER } from "../../utils/gradeColors";
 import { GradeChart } from "./GradeChart";
 import { TopPerks } from "./TopPerks";
@@ -8,6 +9,7 @@ import styles from "./StatsView.module.scss";
 export interface StatsViewProps {
   perks: Perk[];
   ratings: Record<string, Grade>;
+  communityGrades: CommunityGrade[];
 }
 
 const GRADES: Grade[] = (Object.entries(GRADE_ORDER) as [Grade, number][])
@@ -52,7 +54,7 @@ function buildRoleStat(
   return { role, label, totalPerks, ratedCount, distribution, topPerks };
 }
 
-export const StatsView = ({ perks, ratings }: StatsViewProps) => {
+export const StatsView = ({ perks, ratings, communityGrades }: StatsViewProps) => {
   const totalRated = useMemo(() => Object.keys(ratings).length, [ratings]);
 
   const survivorStat = useMemo(
@@ -88,6 +90,12 @@ export const StatsView = ({ perks, ratings }: StatsViewProps) => {
           </p>
           <GradeChart distribution={stat.distribution} ratedCount={stat.ratedCount} />
           {stat.topPerks.length > 0 && <TopPerks perks={stat.topPerks} />}
+          {communityGrades.length > 0 && (() => {
+            const communityPerks = getCommunityTopPerks(communityGrades, perks, stat.role);
+            return communityPerks.length > 0
+              ? <TopPerks perks={communityPerks} heading="Community's Top Picks" />
+              : null;
+          })()}
         </div>
       ))}
     </section>

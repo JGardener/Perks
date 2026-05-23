@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAuth } from "../../hooks/useAuth";
 import { useBuilds } from "../../hooks/useBuilds";
+import { useCommunityGrades } from "../../hooks/useCommunityGrades";
 import { useCharacters } from "../../hooks/useCharacters";
 import { usePerks } from "../../hooks/usePerks";
 import { useRatings } from "../../hooks/useRatings";
@@ -15,6 +16,7 @@ vi.mock("../../hooks/useRatings");
 vi.mock("../../hooks/useToast", () => ({ useToast: vi.fn() }));
 vi.mock("../../hooks/useAuth", () => ({ useAuth: vi.fn() }));
 vi.mock("../../hooks/useBuilds", () => ({ useBuilds: vi.fn() }));
+vi.mock("../../hooks/useCommunityGrades", () => ({ useCommunityGrades: vi.fn() }));
 
 const mockUsePerks = vi.mocked(usePerks);
 const mockUseCharacters = vi.mocked(useCharacters);
@@ -22,6 +24,7 @@ const mockUseRatings = vi.mocked(useRatings);
 const mockUseToast = vi.mocked(useToast);
 const mockUseAuth = vi.mocked(useAuth);
 const mockUseBuilds = vi.mocked(useBuilds);
+const mockUseCommunityGrades = vi.mocked(useCommunityGrades);
 
 const renderWithAuthModal = (ui: React.ReactElement) =>
   render(
@@ -36,6 +39,7 @@ beforeEach(() => {
   mockUseToast.mockReturnValue({ showToast: vi.fn() });
   mockUseAuth.mockReturnValue({ user: null, loading: false, signIn: vi.fn(), signUp: vi.fn(), signOut: vi.fn(), signInWithGoogle: vi.fn() });
   mockUseBuilds.mockReturnValue({ builds: [], loading: false, error: null, saveBuild: vi.fn(), deleteBuild: vi.fn() });
+  mockUseCommunityGrades.mockReturnValue({ grades: [], loading: false, error: null });
 });
 
 describe("PerkList error state", () => {

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ErrorBoundary } from "../ErrorBoundary/ErrorBoundary";
 import { useAuth } from "../../hooks/useAuth";
 import { useBuilds } from "../../hooks/useBuilds";
+import { useCommunityGrades } from "../../hooks/useCommunityGrades";
 import { useCharacters } from "../../hooks/useCharacters";
 import { usePerks } from "../../hooks/usePerks";
 import { useRatings } from "../../hooks/useRatings";
@@ -28,6 +29,7 @@ export const PerkList = () => {
   const { showToast } = useToast();
   const { user } = useAuth();
   const { builds, saveBuild, deleteBuild } = useBuilds(user?.id ?? null);
+  const { grades: communityGrades } = useCommunityGrades(user?.id ?? null);
   const { openAuthModal } = useAuthModal();
   const [activeTab, setActiveTab] = useState<Tab>("perks");
   const [activeRole, setActiveRole] = useState<Role>(getRoleFromUrl);
@@ -160,7 +162,7 @@ export const PerkList = () => {
         hidden={activeTab !== "stats"}
       >
         <ErrorBoundary label="Stats">
-          <StatsView perks={perks} ratings={ratings} />
+          <StatsView perks={perks} ratings={ratings} communityGrades={communityGrades} />
         </ErrorBoundary>
       </div>
     </main>

@@ -4,12 +4,13 @@ import styles from "./StatsView.module.scss";
 
 export interface TopPerksProps {
   perks: Perk[];
+  heading?: string;
 }
 
-export const TopPerks = ({ perks }: TopPerksProps) => {
+export const TopPerks = ({ perks, heading = "A-Grade Perks" }: TopPerksProps) => {
   return (
     <div className={styles.topPerks}>
-      <h3 className={styles.topPerks__heading}>A-Grade Perks</h3>
+      <h3 className={styles.topPerks__heading}>{heading}</h3>
       <ul className={styles.topPerks__list} aria-label="A-grade perks">
         {perks.map((perk) => (
           <li key={perk.name} className={styles.topPerks__item}>
