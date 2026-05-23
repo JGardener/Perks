@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://dbd.tricky.lol/api/:path*"
+    }
+  ]
+}
