@@ -10,7 +10,7 @@ The A–F value assigned to a single perk by the user. Not the same as the act o
 The act of assigning a **Grade** to a perk. A perk with no Grade assigned is *unrated*.
 
 ## Build
-A composition of exactly 4 perks selected for play, scoped to a single **Role**. A Build is not a **Tier List** — it represents one intended loadout, not an evaluation of all perks. An unsaved Build exists only as a URL query string; a **Saved Build** is persisted to the database.
+A composition of 1–4 perks selected for play, scoped to a single **Role**. A Build is not a **Tier List** — it represents one intended loadout, not an evaluation of all perks. Empty slots are permitted (a user may be running a challenge or limited loadout); the UI warns when slots are unfilled but does not block saving. An unsaved Build exists only as a URL query string; a **Saved Build** is persisted to the database.
 
 ## Saved Build
 A **Build** that has been explicitly persisted to the database with a user-assigned name. Distinct from a URL-encoded build, which is ephemeral. A Saved Build belongs to one user and is private by default.

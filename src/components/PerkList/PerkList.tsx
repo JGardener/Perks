@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { ErrorBoundary } from "../ErrorBoundary/ErrorBoundary";
+import { useAuth } from "../../hooks/useAuth";
+import { useBuilds } from "../../hooks/useBuilds";
 import { useCharacters } from "../../hooks/useCharacters";
 import { usePerks } from "../../hooks/usePerks";
 import { useRatings } from "../../hooks/useRatings";
 import { useToast } from "../../hooks/useToast";
+import { useAuthModal } from "../../context/AuthModalContext";
 import { exportTierListImage } from "../../utils/exportCanvas";
 import { BuildMaker } from "../BuildMaker/BuildMaker";
 import { PerkSection } from "../PerkSection/PerkSection";
@@ -23,6 +26,9 @@ export const PerkList = () => {
   const { characterMap, loading: charsLoading, error: charsError, retry: retryChars } = useCharacters();
   const { ratings, setRating } = useRatings();
   const { showToast } = useToast();
+  const { user } = useAuth();
+  const { saveBuild } = useBuilds(user?.id ?? null);
+  const { openAuthModal } = useAuthModal();
   const [activeTab, setActiveTab] = useState<Tab>("perks");
   const [activeRole, setActiveRole] = useState<Role>(getRoleFromUrl);
 
@@ -138,6 +144,9 @@ export const PerkList = () => {
             characterMap={characterMap}
             hasRatings={hasRatings}
             onExportTierList={handleExportTierList}
+            userId={user?.id ?? null}
+            onOpenAuthModal={() => openAuthModal("Sign in to save builds")}
+            onSave={(name, perkNames) => saveBuild(name, activeRole, perkNames, false)}
           />
         </ErrorBoundary>
       </div>

@@ -4,6 +4,7 @@ import { useToast } from "../../hooks/useToast";
 import { decodeBuild, encodeBuild } from "../../utils/buildShare";
 import { exportBuildImage } from "../../utils/exportCanvas";
 import { getPerkImageUrl, resolveDescription } from "../../utils/perkUtils";
+import { SaveBuildModal } from "../SaveBuildModal/SaveBuildModal";
 import styles from "./BuildMaker.module.scss";
 import { ExportToolbar } from "./ExportToolbar";
 
@@ -91,6 +92,9 @@ interface BuildMakerProps {
   characterMap: Record<number, string>;
   hasRatings: boolean;
   onExportTierList: () => void;
+  userId: string | null;
+  onOpenAuthModal: () => void;
+  onSave: (name: string, perks: (string | null)[]) => Promise<void>;
 }
 
 interface Flight {
@@ -100,11 +104,12 @@ interface Flight {
   targetIdx: number;
 }
 
-export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTierList }: BuildMakerProps) => {
+export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTierList, userId, onOpenAuthModal, onSave }: BuildMakerProps) => {
   const { showToast } = useToast();
   const [slots, setSlots] = useState<(Perk | null)[]>([null, null, null, null]);
   const [search, setSearch] = useState("");
   const [flight, setFlight] = useState<Flight | null>(null);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
   const slotRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
   const hydrated = useRef(false);
@@ -218,6 +223,16 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
     setFlight(null);
   };
 
+  const handleSaveClick = () => {
+    if (!userId) { onOpenAuthModal(); return; }
+    setIsSaveModalOpen(true);
+  };
+
+  const handleModalSave = async (name: string) => {
+    await onSave(name, slots.map((p) => p?.name ?? null));
+    setIsSaveModalOpen(false);
+  };
+
   const handleShareUrl = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url).catch(() => {
@@ -247,6 +262,14 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
 
   return (
     <div className={styles.buildMaker}>
+      {isSaveModalOpen && (
+        <SaveBuildModal
+          slots={slots}
+          onSave={handleModalSave}
+          onClose={() => setIsSaveModalOpen(false)}
+        />
+      )}
+
       {flight && (
         <FlyingPerk
           perk={flight.perk}
@@ -327,6 +350,9 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
 
         {inBuild.size > 0 && (
           <div className={styles.clearRow}>
+            <button className={styles.saveBtn} onClick={handleSaveClick}>
+              Save Build
+            </button>
             <button
               className={styles.clearBtn}
               onClick={() => setSlots([null, null, null, null])}
