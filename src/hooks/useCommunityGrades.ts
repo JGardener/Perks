@@ -22,8 +22,7 @@ export const useCommunityGrades = (userId: string | null) => {
     setError(null);
 
     supabase
-      .from("perk_community_grades")
-      .select("*")
+      .rpc("get_perk_community_grades")
       .then(({ data, error: err }) => {
         if (cancelled) return;
         if (err) {
