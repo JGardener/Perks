@@ -418,6 +418,8 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 
 .randomiseRow {
   display: flex;
+  align-items: stretch;
+  gap: 8px;
   padding: 0 0 16px;
 }
 

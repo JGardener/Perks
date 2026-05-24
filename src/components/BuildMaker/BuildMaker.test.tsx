@@ -77,7 +77,8 @@ describe("BuildMaker — perk blacklist", () => {
   it("clicking a ban button shows the activeConstraintCount badge in the Constraints drawer", () => {
     render(<BuildMaker {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: "Exclude Dead Hard from randomiser" }));
-    expect(screen.getByText("1")).not.toBeNull();
+    const toggle = screen.getByRole("button", { name: /constraints/i });
+    expect(toggle.textContent).toContain("1");
   });
 
   it("the ban button label changes to 'Remove from blacklist' after banning", () => {

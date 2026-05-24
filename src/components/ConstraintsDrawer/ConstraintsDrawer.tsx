@@ -77,62 +77,79 @@ export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
         )}
       </div>
 
-      {open && (
-        <div className={styles.panel}>
+      {open && <div className={styles.overlay} onClick={() => setOpen(false)} />}
+
+      <div
+        className={`${styles.panel} ${open ? styles["panel--open"] : ""}`}
+        aria-hidden={!open}
+      >
+        <div className={styles.panelHeader}>
+          <span className={styles.panelTitle}>Constraints</span>
+          <button
+            className={styles.closeBtn}
+            onClick={() => setOpen(false)}
+            aria-label="Close constraints panel"
+            tabIndex={open ? 0 : -1}
+          >
+            ×
+          </button>
+        </div>
+
+        <div className={styles.section}>
+          <span className={styles.sectionLabel}>Build Size</span>
+          <div className={styles.sizePills}>
+            {([1, 2, 3, 4] as const).map((n) => (
+              <button
+                key={n}
+                className={`${styles.pill} ${buildSize === n ? styles["pill--active"] : ""}`}
+                aria-pressed={buildSize === n}
+                onClick={() => setBuildSize(n)}
+                disabled={n < pinnedCount}
+                tabIndex={open ? 0 : -1}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {blacklist.size > 0 && (
           <div className={styles.section}>
-            <span className={styles.sectionLabel}>Build Size</span>
-            <div className={styles.sizePills}>
-              {([1, 2, 3, 4] as const).map((n) => (
-                <button
-                  key={n}
-                  className={`${styles.pill} ${buildSize === n ? styles["pill--active"] : ""}`}
-                  aria-pressed={buildSize === n}
-                  onClick={() => setBuildSize(n)}
-                  disabled={n < pinnedCount}
-                >
-                  {n}
-                </button>
+            <span className={styles.sectionLabel}>Banned Perks</span>
+            <div className={styles.blacklistChips}>
+              {[...blacklist].map((name) => (
+                <div key={name} className={styles.chip}>
+                  <span className={styles.chipName}>{name}</span>
+                  <button
+                    className={styles.chipRemove}
+                    onClick={() => toggleBlacklist(name)}
+                    aria-label={`Remove ${name} from blacklist`}
+                    tabIndex={open ? 0 : -1}
+                  >
+                    ×
+                  </button>
+                </div>
               ))}
             </div>
           </div>
+        )}
 
-          {blacklist.size > 0 && (
-            <div className={styles.section}>
-              <span className={styles.sectionLabel}>Banned Perks</span>
-              <div className={styles.blacklistChips}>
-                {[...blacklist].map((name) => (
-                  <div key={name} className={styles.chip}>
-                    <span className={styles.chipName}>{name}</span>
-                    <button
-                      className={styles.chipRemove}
-                      onClick={() => toggleBlacklist(name)}
-                      aria-label={`Remove ${name} from blacklist`}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+        <FilterSection
+          label="Categories"
+          items={availableCategories}
+          filters={categoryFilters}
+          getLabel={(k) => k}
+          onToggle={toggleCategory}
+        />
 
-          <FilterSection
-            label="Categories"
-            items={availableCategories}
-            filters={categoryFilters}
-            getLabel={(k) => k}
-            onToggle={toggleCategory}
-          />
-
-          <FilterSection
-            label="Characters"
-            items={availableCharacterKeys}
-            filters={characterFilters}
-            getLabel={getCharacterLabel}
-            onToggle={toggleCharacter}
-          />
-        </div>
-      )}
+        <FilterSection
+          label="Characters"
+          items={availableCharacterKeys}
+          filters={characterFilters}
+          getLabel={getCharacterLabel}
+          onToggle={toggleCharacter}
+        />
+      </div>
     </div>
   );
 };

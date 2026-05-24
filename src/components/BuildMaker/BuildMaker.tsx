@@ -374,14 +374,7 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
         </div>
       </div>
 
-      {/* Constraints drawer */}
-      <ConstraintsDrawer
-        state={constraints}
-        actions={constraintActions}
-        derived={constraintDerived}
-      />
-
-      {/* Hero Randomise button */}
+      {/* Hero Randomise button + Constraints trigger */}
       <div className={styles.randomiseRow}>
         <button
           className={styles.randomiseBtn}
@@ -393,6 +386,11 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
             {constraintDerived.constraintError ?? `${constraintDerived.eligibleCount} perk${constraintDerived.eligibleCount !== 1 ? "s" : ""} eligible`}
           </span>
         </button>
+        <ConstraintsDrawer
+          state={constraints}
+          actions={constraintActions}
+          derived={constraintDerived}
+        />
       </div>
 
       {/* Middle band: descriptions (left) + picker (right) */}

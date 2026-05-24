@@ -103,7 +103,8 @@ describe("ConstraintsDrawer", () => {
 
   it("active constraint count badge renders when activeConstraintCount > 0", () => {
     renderDrawer({}, {}, { activeConstraintCount: 3 });
-    expect(screen.getByText("3")).not.toBeNull();
+    const toggle = screen.getByRole("button", { name: /constraints/i });
+    expect(toggle.textContent).toContain("3");
   });
 
   it("no badge when activeConstraintCount is 0", () => {
