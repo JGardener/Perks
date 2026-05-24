@@ -276,6 +276,8 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
     });
   };
 
+  const hasPerks = inBuild.size > 0;
+
   return (
     <div className={styles.buildMaker}>
       {isSaveModalOpen && (
@@ -295,8 +297,8 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
         />
       )}
 
-      {/* Left panel: slots, summary, exports */}
-      <div className={styles.leftPanel}>
+      {/* Top band: slots + toolbar + actions */}
+      <div className={styles.topBand}>
         <div className={styles.buildSlots}>
           {slots.map((perk, i) => (
             <div key={i} className={styles.slot}>
@@ -323,35 +325,10 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
                   <span className={styles["slot__plus"]}>+</span>
                 )}
               </div>
-              <span className={styles["slot__name"]}>{perk?.name ?? " "}</span>
+              <span className={styles["slot__name"]}>{perk?.name ?? " "}</span>
             </div>
           ))}
         </div>
-
-        {inBuild.size > 0 && (
-          <div className={styles.summary}>
-            {slots.filter(Boolean).map((perk) => (
-              <div key={perk!.name} className={styles["summary__row"]}>
-                <div className={styles["summary__iconWrap"]}>
-                  <img
-                    className={styles["summary__icon"]}
-                    style={{ clipPath: OCTAGON }}
-                    src={getPerkImageUrl(perk!.image)}
-                    alt={perk!.name}
-                    onError={(e) => (e.currentTarget.src = "/perk-placeholder.svg")}
-                  />
-                </div>
-                <div className={styles["summary__body"]}>
-                  <h3 className={styles["summary__name"]}>{perk!.name}</h3>
-                  <p
-                    className={styles["summary__description"]}
-                    dangerouslySetInnerHTML={{ __html: resolveDescription(perk!.description, perk!.tunables) }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
 
         <ExportToolbar
           onShareUrl={handleShareUrl}
@@ -360,67 +337,97 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
             const ok = await exportBuildImage(slots, role);
             if (!ok) showToast("Failed to export image");
           }}
-          buildActive={inBuild.size > 0}
+          buildActive={hasPerks}
           onExportTierList={hasRatings ? onExportTierList : undefined}
         />
 
-        {inBuild.size > 0 && (
-          <div className={styles.clearRow}>
-            <button className={styles.saveBtn} onClick={handleSaveClick}>
-              Save Build
-            </button>
-            <button
-              className={styles.clearBtn}
-              onClick={() => setSlots([null, null, null, null])}
-            >
-              Clear Build
-            </button>
-          </div>
-        )}
+        <div className={styles.clearRow}>
+          <button className={styles.saveBtn} onClick={handleSaveClick} disabled={!hasPerks}>
+            Save Build
+          </button>
+          <button
+            className={styles.clearBtn}
+            onClick={() => setSlots([null, null, null, null])}
+            disabled={!hasPerks}
+          >
+            Clear Build
+          </button>
+        </div>
       </div>
 
-      {/* Right panel: search + picker */}
-      <div className={styles.rightPanel}>
-        <div className={styles.searchRow}>
-          <input
-            className={styles.searchInput}
-            type="search"
-            placeholder="Search perks…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      {/* Middle band: descriptions (left) + picker (right) */}
+      <div className={styles.middleBand}>
+        <div className={styles.leftPanel}>
+          {hasPerks ? (
+            <div className={styles.summary}>
+              {slots.filter(Boolean).map((perk) => (
+                <div key={perk!.name} className={styles["summary__row"]}>
+                  <div className={styles["summary__iconWrap"]}>
+                    <img
+                      className={styles["summary__icon"]}
+                      style={{ clipPath: OCTAGON }}
+                      src={getPerkImageUrl(perk!.image)}
+                      alt={perk!.name}
+                      onError={(e) => (e.currentTarget.src = "/perk-placeholder.svg")}
+                    />
+                  </div>
+                  <div className={styles["summary__body"]}>
+                    <h3 className={styles["summary__name"]}>{perk!.name}</h3>
+                    <p
+                      className={styles["summary__description"]}
+                      dangerouslySetInnerHTML={{ __html: resolveDescription(perk!.description, perk!.tunables) }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.emptyPanel}>Select perks to see their descriptions.</p>
+          )}
         </div>
 
-        <div className={styles.picker}>
-          {filteredPerks.map((perk) => {
-            const active = inBuild.has(perk.name);
-            const dimmed = !active && isFull;
-            return (
-              <button
-                key={perk.name}
-                className={`${styles["pickerItem"]} ${active ? styles["pickerItem--active"] : ""} ${dimmed ? styles["pickerItem--dimmed"] : ""}`}
-                onClick={(e) => handlePickerClick(perk, e.currentTarget)}
-                disabled={dimmed}
-                title={perk.name}
-              >
-                <div
-                  className={styles["pickerItem__octa"]}
-                  data-active={String(active)}
-                  data-octa
-                  style={{ opacity: flight?.perk.name === perk.name ? 0 : 1 }}
+        <div className={styles.rightPanel}>
+          <div className={styles.searchRow}>
+            <input
+              className={styles.searchInput}
+              type="search"
+              placeholder="Search perks…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className={styles.picker}>
+            {filteredPerks.map((perk) => {
+              const active = inBuild.has(perk.name);
+              const dimmed = !active && isFull;
+              return (
+                <button
+                  key={perk.name}
+                  className={`${styles["pickerItem"]} ${active ? styles["pickerItem--active"] : ""} ${dimmed ? styles["pickerItem--dimmed"] : ""}`}
+                  onClick={(e) => handlePickerClick(perk, e.currentTarget)}
+                  disabled={dimmed}
+                  title={perk.name}
                 >
-                  <img
-                    className={styles["pickerItem__img"]}
-                    style={{ clipPath: OCTAGON }}
-                    src={getPerkImageUrl(perk.image)}
-                    alt={perk.name}
-                    onError={(e) => (e.currentTarget.src = "/perk-placeholder.svg")}
-                  />
-                </div>
-                <span className={styles["pickerItem__name"]}>{perk.name}</span>
-              </button>
-            );
-          })}
+                  <div
+                    className={styles["pickerItem__octa"]}
+                    data-active={String(active)}
+                    data-octa
+                    style={{ opacity: flight?.perk.name === perk.name ? 0 : 1 }}
+                  >
+                    <img
+                      className={styles["pickerItem__img"]}
+                      style={{ clipPath: OCTAGON }}
+                      src={getPerkImageUrl(perk.image)}
+                      alt={perk.name}
+                      onError={(e) => (e.currentTarget.src = "/perk-placeholder.svg")}
+                    />
+                  </div>
+                  <span className={styles["pickerItem__name"]}>{perk.name}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
