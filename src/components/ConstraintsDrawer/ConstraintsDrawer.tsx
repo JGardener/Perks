@@ -52,8 +52,8 @@ interface Props {
 
 export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
   const [open, setOpen] = useState(false);
-  const { buildSize, categoryFilters, characterFilters } = state;
-  const { setBuildSize, toggleCategory, toggleCharacter } = actions;
+  const { buildSize, blacklist, categoryFilters, characterFilters } = state;
+  const { setBuildSize, toggleBlacklist, toggleCategory, toggleCharacter } = actions;
   const { activeConstraintCount, pinnedCount, availableCategories, availableCharacterKeys, getCharacterLabel } = derived;
 
   return (
@@ -88,6 +88,26 @@ export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
               ))}
             </div>
           </div>
+
+          {blacklist.size > 0 && (
+            <div className={styles.section}>
+              <span className={styles.sectionLabel}>Banned Perks</span>
+              <div className={styles.blacklistChips}>
+                {[...blacklist].map((name) => (
+                  <div key={name} className={styles.chip}>
+                    <span className={styles.chipName}>{name}</span>
+                    <button
+                      className={styles.chipRemove}
+                      onClick={() => toggleBlacklist(name)}
+                      aria-label={`Remove ${name} from blacklist`}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <FilterSection
             label="Categories"

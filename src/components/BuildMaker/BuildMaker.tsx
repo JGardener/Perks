@@ -492,7 +492,7 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
           <div className={styles.picker}>
             {filteredPerks.map((perk) => {
               const active = inBuild.has(perk.name);
-              const banned = protoVariant ? proto.blacklist.has(perk.name) : false;
+              const banned = protoVariant ? proto.blacklist.has(perk.name) : constraints.blacklist.has(perk.name);
               const dimmed = !active && (isFull || banned);
 
               const pickerBtn = (
@@ -541,29 +541,38 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
               // END PROTOTYPE
 
               return (
-                <button
-                  key={perk.name}
-                  className={`${styles["pickerItem"]} ${active ? styles["pickerItem--active"] : ""} ${dimmed ? styles["pickerItem--dimmed"] : ""}`}
-                  onClick={(e) => handlePickerClick(perk, e.currentTarget)}
-                  disabled={dimmed}
-                  title={perk.name}
-                >
-                  <div
-                    className={styles["pickerItem__octa"]}
-                    data-active={String(active)}
-                    data-octa
-                    style={{ opacity: flight?.perk.name === perk.name ? 0 : 1 }}
+                <div key={perk.name} style={{ position: "relative" }}>
+                  <button
+                    className={`${styles["pickerItem"]} ${active ? styles["pickerItem--active"] : ""} ${dimmed ? styles["pickerItem--dimmed"] : ""}`}
+                    onClick={(e) => handlePickerClick(perk, e.currentTarget)}
+                    disabled={!active && isFull}
+                    title={banned ? `${perk.name} (blacklisted — click ⊘ to remove)` : perk.name}
                   >
-                    <img
-                      className={styles["pickerItem__img"]}
-                      style={{ clipPath: OCTAGON }}
-                      src={getPerkImageUrl(perk.image)}
-                      alt={perk.name}
-                      onError={(e) => (e.currentTarget.src = "/perk-placeholder.svg")}
-                    />
-                  </div>
-                  <span className={styles["pickerItem__name"]}>{perk.name}</span>
-                </button>
+                    <div
+                      className={styles["pickerItem__octa"]}
+                      data-active={String(active)}
+                      data-octa
+                      style={{ opacity: flight?.perk.name === perk.name ? 0 : 1 }}
+                    >
+                      <img
+                        className={styles["pickerItem__img"]}
+                        style={{ clipPath: OCTAGON }}
+                        src={getPerkImageUrl(perk.image)}
+                        alt={perk.name}
+                        onError={(e) => (e.currentTarget.src = "/perk-placeholder.svg")}
+                      />
+                    </div>
+                    <span className={styles["pickerItem__name"]}>{perk.name}</span>
+                  </button>
+                  <button
+                    className={`${styles["banBtn"]} ${banned ? styles["banBtn--active"] : ""}`}
+                    onClick={() => constraintActions.toggleBlacklist(perk.name)}
+                    aria-label={banned ? `Remove ${perk.name} from blacklist` : `Exclude ${perk.name} from randomiser`}
+                    title={banned ? "Remove from blacklist" : "Exclude from randomiser"}
+                  >
+                    ⊘
+                  </button>
+                </div>
               );
             })}
           </div>

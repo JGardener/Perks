@@ -387,6 +387,33 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   }
 }
 
+// ── Ban button (per perk in picker) ──────────────────────────────────────────
+
+.banBtn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: none;
+  border: none;
+  color: var(--color-parchment-dim);
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px;
+  opacity: 0.3;
+  transition: opacity 0.12s, color 0.12s;
+
+  &:hover {
+    opacity: 0.9;
+    color: #e07070;
+  }
+
+  &--active {
+    opacity: 0.85;
+    color: #e07070;
+  }
+}
+
 // ── Hero Randomise button ─────────────────────────────────────────────────────
 
 .randomiseRow {

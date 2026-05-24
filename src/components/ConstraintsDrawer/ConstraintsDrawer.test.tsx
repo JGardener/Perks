@@ -177,6 +177,29 @@ describe("Category filters", () => {
   });
 });
 
+describe("Blacklist / Banned Perks", () => {
+  it("renders a chip for each blacklisted perk name when drawer is open", () => {
+    renderDrawer({ blacklist: new Set(["Dead Hard", "Adrenaline"]) });
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    expect(screen.getByText("Dead Hard")).not.toBeNull();
+    expect(screen.getByText("Adrenaline")).not.toBeNull();
+  });
+
+  it("clicking the remove button on a chip calls toggleBlacklist with that perk name", () => {
+    const toggleBlacklist = vi.fn();
+    renderDrawer({ blacklist: new Set(["Dead Hard"]) }, { toggleBlacklist });
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    fireEvent.click(screen.getByRole("button", { name: /remove dead hard from blacklist/i }));
+    expect(toggleBlacklist).toHaveBeenCalledWith("Dead Hard");
+  });
+
+  it("no chips rendered when blacklist is empty", () => {
+    renderDrawer({ blacklist: new Set() });
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    expect(screen.queryByText("Banned Perks")).toBeNull();
+  });
+});
+
 describe("Character filters", () => {
   it("renders Include and Exclude buttons for each available character key when drawer is open", () => {
     renderDrawer(

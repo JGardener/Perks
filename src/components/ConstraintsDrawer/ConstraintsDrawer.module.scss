@@ -123,6 +123,44 @@
   text-overflow: ellipsis;
 }
 
+.blacklistChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(180, 60, 60, 0.2);
+  border: 1px solid rgba(180, 60, 60, 0.5);
+  border-radius: 3px;
+  padding: 0.15rem 0.4rem;
+}
+
+.chipName {
+  font-size: 0.75rem;
+  color: #e07070;
+  white-space: nowrap;
+}
+
+.chipRemove {
+  background: none;
+  border: none;
+  color: #e07070;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.1rem;
+  opacity: 0.7;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
 .filterBtn {
   width: 1.6rem;
   height: 1.6rem;

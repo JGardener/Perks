@@ -66,6 +66,27 @@ describe("BuildMaker — ConstraintsDrawer integration", () => {
   });
 });
 
+describe("BuildMaker — perk blacklist", () => {
+  it("each perk in the picker has a ban button", () => {
+    render(<BuildMaker {...defaultProps} />);
+    TEST_PERKS.forEach((perk) => {
+      expect(screen.getByRole("button", { name: `Exclude ${perk.name} from randomiser` })).not.toBeNull();
+    });
+  });
+
+  it("clicking a ban button shows the activeConstraintCount badge in the Constraints drawer", () => {
+    render(<BuildMaker {...defaultProps} />);
+    fireEvent.click(screen.getByRole("button", { name: "Exclude Dead Hard from randomiser" }));
+    expect(screen.getByText("1")).not.toBeNull();
+  });
+
+  it("the ban button label changes to 'Remove from blacklist' after banning", () => {
+    render(<BuildMaker {...defaultProps} />);
+    fireEvent.click(screen.getByRole("button", { name: "Exclude Dead Hard from randomiser" }));
+    expect(screen.getByRole("button", { name: "Remove Dead Hard from blacklist" })).not.toBeNull();
+  });
+});
+
 describe("BuildMaker — pin slots", () => {
   it("renders a Pin button for each slot", () => {
     render(<BuildMaker {...defaultProps} />);
