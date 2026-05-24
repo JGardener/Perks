@@ -191,6 +191,7 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
   }, [role, slots]);
 
   const removeSlot = (i: number) => {
+    if (constraints.pinnedSlots.has(i)) constraintActions.togglePin(i);
     setSlots((prev) => {
       const next = [...prev];
       next[i] = null;
@@ -370,6 +371,16 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
                 </button>
               )}
               {/* END PROTOTYPE */}
+              {/* Production pin button */}
+              {!protoVariant && (
+                <button
+                  className={`${styles["slot__pinBtn"]} ${constraints.pinnedSlots.has(i) ? styles["slot__pinBtn--pinned"] : ""}`}
+                  onClick={() => constraintActions.togglePin(i)}
+                  disabled={!perk}
+                >
+                  {constraints.pinnedSlots.has(i) ? "Pinned" : "Pin"}
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -391,7 +402,12 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
           </button>
           <button
             className={styles.clearBtn}
-            onClick={() => setSlots([null, null, null, null])}
+            onClick={() => {
+              [...constraints.pinnedSlots].forEach((i) => {
+                if (slots[i]) constraintActions.togglePin(i);
+              });
+              setSlots([null, null, null, null]);
+            }}
             disabled={!hasPerks}
           >
             Clear Build

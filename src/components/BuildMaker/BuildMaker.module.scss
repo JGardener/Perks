@@ -120,6 +120,36 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  &__pinBtn {
+    background: none;
+    border: 1px solid var(--color-ember-dim);
+    border-radius: 3px;
+    color: var(--color-parchment-dim);
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-size: 0.55rem;
+    letter-spacing: 1.5px;
+    padding: 3px 8px;
+    text-transform: uppercase;
+    transition: border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+    width: 100%;
+
+    &:hover:not(:disabled) {
+      border-color: var(--color-ember);
+      color: var(--color-ember);
+    }
+
+    &--pinned {
+      border-color: var(--color-ember);
+      color: var(--color-ember);
+    }
+
+    &:disabled {
+      opacity: 0.2;
+      cursor: default;
+    }
+  }
 }
 
 // ── Build summary ─────────────────────────────────────────────────────────────
