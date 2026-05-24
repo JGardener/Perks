@@ -36,3 +36,28 @@ kbd {
   background: #2a2a2a;
   color: var(--color-parchment-dim);
 }
+
+// Firefox
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ember) transparent;
+}
+
+// Webkit (Chrome, Brave, Edge, Safari)
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-ember);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-parchment-dim);
+}
