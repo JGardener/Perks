@@ -44,7 +44,7 @@ docs/
 
 ## Current State (as of 2026-05-24)
 
-Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, filter by rating, mobile responsiveness, stats view, export/share, saved builds backend, community grade aggregation, saved builds UI, `useConstraints` hook (randomiser logic + localStorage persistence), and pin-slot buttons are all done.
+Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, filter by rating, mobile responsiveness, stats view, export/share, saved builds backend, community grade aggregation, saved builds UI, `useConstraints` hook (randomiser logic + localStorage persistence), pin-slot buttons, and the full constraints drawer (build size, perk blacklist, category/character filters, reset) are all done.
 
 ### Data & API
 
@@ -87,7 +87,8 @@ Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, f
 - `src/components/CategoryFilter/CategoryFilter.tsx` — row of category toggle buttons rendered below the sort bar. Each button is styled in its category color; active = solid fill. Doubles as a visual legend. `available` prop is derived per-role so only relevant categories appear. Shows a Clear button when any filter is active.
 - `src/components/SortBar/SortBar.tsx` — sort field (name / character / grade) + direction toggle. Full ARIA toolbar pattern (`role="toolbar"`, `role="group"`, `aria-pressed`).
 - `src/components/PerkList/PerkList.tsx` — top-level tab bar (Perks / Build / Stats) with `<main>` landmark and full ARIA tab pattern. Perks tab has Survivor / Killer sub-tabs.
-- `src/components/BuildMaker/BuildMaker.tsx` — 4-slot build composer. Role toggle (clears build on switch), octagonal slot display, keyword search (name + character + HTML-stripped description), dense perk picker grid. Clicking a perk triggers a FLIP animation (ghost flies to the target slot via Web Animations API); clicking again removes it. Each slot has a Pin button (disabled when empty, label toggles "Pin"/"Pinned"); removing a perk from a pinned slot auto-unpins it. A hero "Randomise Build" button shows the eligible count (or a warning if there is a constraint conflict) and calls `useConstraints.randomise()`. Build summary below slots shows each perk's full description. Respects `prefers-reduced-motion`. Integrates `ExportToolbar` for share URL, copy text, and image download. Reads `?role=&p0–p3=` on mount to restore a shared build. A `urlReady` ref gates the URL-sync effect so it never fires before hydration completes. Save Build button opens `SaveBuildModal`; renders `SavedBuilds` below the picker. Still contains `// PROTOTYPE` blocks (to be removed in issue #20).
+- `src/components/BuildMaker/BuildMaker.tsx` — 4-slot build composer. Role toggle (clears build on switch), octagonal slot display, keyword search (name + character + HTML-stripped description), dense perk picker grid. Clicking a perk triggers a FLIP animation (ghost flies to the target slot via Web Animations API); clicking again removes it. Each slot has a Pin button (disabled when empty, label toggles "Pin"/"Pinned"); removing a perk from a pinned slot auto-unpins it. A hero "Randomise Build" button shows the eligible count (or a warning if there is a constraint conflict) and calls `useConstraints.randomise()`. Build summary below slots shows each perk's full description. Respects `prefers-reduced-motion`. Integrates `ExportToolbar` for share URL, copy text, and image download. Reads `?role=&p0–p3=` on mount to restore a shared build. A `urlReady` ref gates the URL-sync effect so it never fires before hydration completes. Save Build button opens `SaveBuildModal`; renders `SavedBuilds` below the picker. Renders `ConstraintsDrawer` above the randomise row.
+- `src/components/ConstraintsDrawer/ConstraintsDrawer.tsx` — slide-in drawer (triggered from within the randomise row) for configuring randomiser constraints. Build size picker (1–4 pills, disabled below pinned count), banned perks chip list with per-chip remove, category include/exclude filter grid, character include/exclude filter grid. Reset button appears when any constraint is active. Badge on the toggle shows active constraint count. Slide-in from right; overlay dismisses on click.
 - `src/components/BuildMaker/ExportToolbar.tsx` — three export buttons (Share URL, Copy Text, Download Image). Buttons show a 2-second "Copied!" / confirmation state after clipboard writes.
 - `src/components/SaveBuildModal/SaveBuildModal.tsx` — modal for naming and saving the active build. Warns if fewer than 4 perks are selected. Escape to close, disabled Save button until name is non-empty. `role="dialog"`, `aria-modal`, `aria-labelledby`.
 - `src/components/DeleteBuildModal/DeleteBuildModal.tsx` — confirmation dialog for deleting a saved build. Shows build name, Cancel + Confirm actions, Escape to close.
@@ -125,8 +126,4 @@ Coverage: ~273 of 309 icons (~88%). Remaining ~36 are late-2024 chapters not yet
 
 ## Next Steps
 
-- **Constraints Panel** (issue #17) — drawer scaffold + Build Size control.
-- **Category & Character filters** (issue #18, blocked by #17) — inside the constraints drawer.
-- **Perk Blacklist** (issue #19, blocked by #17) — inside the constraints drawer.
-- **Constraint persistence + prototype cleanup** (issue #20, blocked by #18, #19) — Reset button, wire `resetConstraints`, delete `// PROTOTYPE` blocks.
 - **Community grades in Stats** — surface `useCommunityGrades` in the Stats tab to show community grade distribution alongside personal ratings.
