@@ -30,7 +30,7 @@ describe("useCommunityGrades", () => {
     const showToast = vi.fn();
     mockUseToast.mockReturnValue({ showToast });
 
-    mockRpc.mockResolvedValueOnce({ data: null, error: { message: "DB error" } });
+    mockRpc.mockResolvedValueOnce({ data: null, error: { message: "DB error", details: "", hint: "", code: "", name: "PostgrestError" }, count: null, status: 500, statusText: "Internal Server Error" } as never);
 
     const { result } = renderHook(() => useCommunityGrades("user-123"));
 

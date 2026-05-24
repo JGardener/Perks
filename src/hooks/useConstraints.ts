@@ -32,14 +32,6 @@ export interface ConstraintsDerived {
   pinnedCount: number;
 }
 
-const DEFAULTS = {
-  pinnedSlots: new Set<number>(),
-  blacklist: new Set<string>(),
-  buildSize: 4,
-  categoryFilters: {} as Record<string, FilterState>,
-  characterFilters: {} as Record<string, FilterState>,
-};
-
 function storageKey(role: string) {
   return `constraints_${role}`;
 }
