@@ -357,6 +357,55 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   }
 }
 
+// ── Hero Randomise button ─────────────────────────────────────────────────────
+
+.randomiseRow {
+  display: flex;
+  padding: 0 0 16px;
+}
+
+.randomiseBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-ember);
+  border: none;
+  border-radius: 4px;
+  color: #000;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 12px 20px;
+  text-transform: uppercase;
+  transition: filter 0.15s ease, opacity 0.15s ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.12);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.randomisePool {
+  font-family: var(--font-label);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  color: rgba(0, 0, 0, 0.6);
+
+  &--warn {
+    color: var(--color-blood, #8b0000);
+  }
+}
+
 // ── Responsive ────────────────────────────────────────────────────────────────
 
 @media (max-width: 900px) {

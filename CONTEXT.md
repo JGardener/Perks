@@ -44,3 +44,24 @@ The aggregate **Grade** breakdown for a perk across all users of the app, comput
 
 ## ExportToolbar
 The row of export actions in the Build tab. The canonical location for all export operations — build-specific exports (Share URL, Copy Text, Download Build Image) and library-wide exports (**Tier List** export) both live here.
+
+## Randomiser
+The feature that generates a **Build** by randomly selecting perks from the **Eligible Pool**. Controlled by the **Constraints Panel**. The Randomise button is always visible outside the Constraints Panel; constraints are optional.
+
+## Constraints Panel
+The collapsible panel in the Build tab that houses all **Build Constraints**. Persisted to `localStorage` scoped by **Role**. Contains a live **Eligible Pool** count and a Reset control (confirmation required).
+
+## Build Constraints
+The set of rules that narrow the **Eligible Pool** before the **Randomiser** runs. Includes: build size, **Perk Blacklist**, category filter, character filter, and **Pinned Slots**. Constraints compose — all active rules apply simultaneously. Any unresolved conflict disables the Randomise button with an explicit reason.
+
+## Eligible Pool
+The set of perks available for randomisation after all **Build Constraints** are applied. Displayed as a live count in the **Constraints Panel**. When the Eligible Pool is smaller than the required build size, the Randomise button is disabled.
+
+## Pinned Slot
+A build slot whose perk is locked by the user and excluded from randomisation. Set by clicking a lock icon on an occupied slot. A Pinned Slot always overrides **Build Constraints** — the pinned perk is included regardless of active filters — but this conflict disables the Randomise button until the user resolves it (by removing the conflicting constraint or unpinning the slot).
+
+## Perk Blacklist
+The set of specific perks excluded from the **Eligible Pool**. Managed via a ban icon on each perk card in the **Perk Picker**. Displayed as removable chips in the **Constraints Panel**.
+
+## Base Perks
+Perks with no character owner (`character: null`). Treated as a named group in the character filter within the **Constraints Panel**, distinct from character-specific perks.

@@ -42,9 +42,9 @@ docs/
     plans/      # Implementation plans
 ```
 
-## Current State (as of 2026-05-23)
+## Current State (as of 2026-05-24)
 
-Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, filter by rating, mobile responsiveness, stats view, export/share, saved builds backend, and community grade aggregation are all done.
+Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, filter by rating, mobile responsiveness, stats view, export/share, saved builds backend, community grade aggregation, and saved builds UI are all done.
 
 ### Data & API
 
@@ -86,8 +86,11 @@ Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, f
 - `src/components/CategoryFilter/CategoryFilter.tsx` — row of category toggle buttons rendered below the sort bar. Each button is styled in its category color; active = solid fill. Doubles as a visual legend. `available` prop is derived per-role so only relevant categories appear. Shows a Clear button when any filter is active.
 - `src/components/SortBar/SortBar.tsx` — sort field (name / character / grade) + direction toggle. Full ARIA toolbar pattern (`role="toolbar"`, `role="group"`, `aria-pressed`).
 - `src/components/PerkList/PerkList.tsx` — top-level tab bar (Perks / Build / Stats) with `<main>` landmark and full ARIA tab pattern. Perks tab has Survivor / Killer sub-tabs.
-- `src/components/BuildMaker/BuildMaker.tsx` — 4-slot build composer. Role toggle (clears build on switch), octagonal slot display, keyword search (name + character + HTML-stripped description), dense perk picker grid. Clicking a perk triggers a FLIP animation (ghost flies to the target slot via Web Animations API); clicking again removes it. Build summary below slots shows each perk's full description. Respects `prefers-reduced-motion`. Integrates `ExportToolbar` for share URL, copy text, and image download. Reads `?role=&p0–p3=` on mount to restore a shared build. A `urlReady` ref gates the URL-sync effect so it never fires before hydration completes (prevents `?role=survivor&p0=...` being written on every fresh page load).
+- `src/components/BuildMaker/BuildMaker.tsx` — 4-slot build composer. Role toggle (clears build on switch), octagonal slot display, keyword search (name + character + HTML-stripped description), dense perk picker grid. Clicking a perk triggers a FLIP animation (ghost flies to the target slot via Web Animations API); clicking again removes it. Build summary below slots shows each perk's full description. Respects `prefers-reduced-motion`. Integrates `ExportToolbar` for share URL, copy text, and image download. Reads `?role=&p0–p3=` on mount to restore a shared build. A `urlReady` ref gates the URL-sync effect so it never fires before hydration completes. Save Build button opens `SaveBuildModal`; renders `SavedBuilds` below the picker.
 - `src/components/BuildMaker/ExportToolbar.tsx` — three export buttons (Share URL, Copy Text, Download Image). Buttons show a 2-second "Copied!" / confirmation state after clipboard writes.
+- `src/components/SaveBuildModal/SaveBuildModal.tsx` — modal for naming and saving the active build. Warns if fewer than 4 perks are selected. Escape to close, disabled Save button until name is non-empty. `role="dialog"`, `aria-modal`, `aria-labelledby`.
+- `src/components/DeleteBuildModal/DeleteBuildModal.tsx` — confirmation dialog for deleting a saved build. Shows build name, Cancel + Confirm actions, Escape to close.
+- `src/components/SavedBuilds/SavedBuilds.tsx` — "Your Builds" section rendered below the build picker. Shows a sign-in prompt for anon users; empty state for authenticated users with no saved builds; otherwise a card list filtered to the current role. Each `SavedBuildCard` shows the build name, a 4-icon strip, Load and Delete buttons. Load prompts for confirmation ("Replace build in progress?") if the current build has perks. Delete opens `DeleteBuildModal`.
 - `src/components/AuthModal/AuthModal.tsx` — sign in / create account modal. Focus trap, Escape key handling, `aria-labelledby`, `role="alert"` on errors, `role="status"` on success, `autoComplete` attributes.
 - `src/components/RatingFilter/RatingFilter.tsx` — row of A–F + Unrated toggle buttons rendered below the category filter. Each grade has a distinct tier-list color (green → blue → amber → orange → light red → blood red). `active` is a `Set<Grade | "unrated">`; multi-select, composable with the category filter. Shows a Clear button when any filter is active.
 - `src/components/StatsView/StatsView.tsx` — Stats tab root. Shows an empty state if no perks are rated; otherwise renders a `GradeChart` + `TopPerks` section for each role. Computes distribution and A-grade perk lists with `useMemo`.
@@ -116,5 +119,5 @@ Coverage: ~273 of 309 icons (~88%). Remaining ~36 are late-2024 chapters not yet
 
 ## Next Steps
 
-- **Saved builds UI** *(next priority)* — surface `useBuilds` and `useCommunityGrades` in the frontend (Build tab: save/load, Stats tab: community distribution).
 - **Random build generator** — a function that allows users to create a build from 4 randomly chosen perks.
+- **Community grades in Stats** — surface `useCommunityGrades` in the Stats tab to show community grade distribution alongside personal ratings.
