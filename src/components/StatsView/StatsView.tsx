@@ -3,7 +3,6 @@ import { useAuthModal } from "../../context/AuthModalContext";
 import { useAuth } from "../../hooks/useAuth";
 import type { CommunityGrade, Grade, Perk } from "../../types/dbd";
 import { getCommunityTopPerks } from "../../utils/communityPerks";
-import { GRADE_COLORS } from "../../utils/gradeColors";
 import { GRADE_ORDER } from "../../utils/gradeColors";
 import { GradeChart } from "./GradeChart";
 import { GradePillStrip } from "./GradePillStrip";
