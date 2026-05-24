@@ -8,6 +8,7 @@ A React + TypeScript + Vite web app for rating Dead by Daylight perks A–F and 
 - **Build maker** — pick four perks, animate them into slots, share via URL or export as PNG
 - **Stats view** — grade distribution charts and top-A-rated perks per role
 - **Community grades** — see how other signed-in users have rated each perk (auth-gated)
+- **Randomise Build** — generate a random build from a configurable pool: pin specific slots, blacklist perks, filter by category or character, and set build size 1–4. Constraints persist across sessions.
 - **Saved builds** — save and reload named builds (requires sign-in)
 - **Export** — download the active build or your full tier list as a PNG image
 - Ratings persist to Supabase for signed-in users; falls back to `localStorage` for anonymous use. First sign-in auto-migrates local ratings.
@@ -85,3 +86,4 @@ Perk and character data: [`dbd.tricky.lol`](https://dbd.tricky.lol/apidocs/) —
 ## Known issues
 
 - **~36 perk icons missing** — most recent chapters (late 2024+) not yet available in any community asset repo. Placeholder shown automatically; will resolve as repos catch up.
+- **Constraints Panel not yet built** — the Randomise button and pin slots are wired up, but the full constraints UI (blacklist, category/character filters, build size picker) is behind issues #17–#20.

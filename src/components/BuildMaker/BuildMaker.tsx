@@ -5,6 +5,7 @@ import { useToast } from "../../hooks/useToast";
 import { decodeBuild, encodeBuild } from "../../utils/buildShare";
 import { exportBuildImage } from "../../utils/exportCanvas";
 import { getPerkImageUrl, resolveDescription } from "../../utils/perkUtils";
+import { ConstraintsDrawer } from "../ConstraintsDrawer/ConstraintsDrawer";
 import { SaveBuildModal } from "../SaveBuildModal/SaveBuildModal";
 import { SavedBuilds } from "../SavedBuilds/SavedBuilds";
 import styles from "./BuildMaker.module.scss";
@@ -420,6 +421,15 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
       {protoVariant === "B" && <VariantBHero state={proto} actions={protoActions} derived={protoDerived} />}
       {protoVariant === "C" && <VariantCStrip state={proto} actions={protoActions} derived={protoDerived} />}
       {/* END PROTOTYPE */}
+
+      {/* Constraints drawer */}
+      {!protoVariant && (
+        <ConstraintsDrawer
+          state={constraints}
+          actions={constraintActions}
+          derived={constraintDerived}
+        />
+      )}
 
       {/* Hero Randomise button */}
       {!protoVariant && (

@@ -29,6 +29,7 @@ export interface ConstraintsDerived {
   availableCategories: string[];
   availableCharacterKeys: string[];
   getCharacterLabel: (key: string) => string;
+  pinnedCount: number;
 }
 
 const DEFAULTS = {
@@ -261,6 +262,6 @@ export function useConstraints(
   return [
     { pinnedSlots, blacklist, buildSize, categoryFilters, characterFilters },
     { togglePin, toggleBlacklist, setBuildSize, toggleCategory, toggleCharacter, resetConstraints, randomise },
-    { eligibleCount, activeConstraintCount, constraintError, canRandomise, availableCategories, availableCharacterKeys, getCharacterLabel },
+    { eligibleCount, activeConstraintCount, constraintError, canRandomise, availableCategories, availableCharacterKeys, getCharacterLabel, pinnedCount },
   ];
 }

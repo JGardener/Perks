@@ -44,7 +44,7 @@ docs/
 
 ## Current State (as of 2026-05-24)
 
-Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, filter by rating, mobile responsiveness, stats view, export/share, saved builds backend, community grade aggregation, and saved builds UI are all done.
+Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, filter by rating, mobile responsiveness, stats view, export/share, saved builds backend, community grade aggregation, saved builds UI, `useConstraints` hook (randomiser logic + localStorage persistence), and pin-slot buttons are all done.
 
 ### Data & API
 
@@ -72,6 +72,7 @@ Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, f
 - `src/hooks/useRatings.ts` — A–F grade ratings. Authenticated users read/write to Supabase (`ratings` table, RLS by `user_id`). Unauthenticated users fall back to `localStorage`. First login auto-migrates local ratings to Supabase. Writes are optimistic.
 - `src/hooks/useBuilds.ts` — saved builds CRUD. Accepts `userId`. `saveBuild(name, role, perks, isPublic?)` validates via `validate-build` edge function then inserts; optimistic prepend. `deleteBuild(id)` guards on both `id` and `user_id`. Clears state on sign-out.
 - `src/hooks/useCommunityGrades.ts` — fetches `perk_community_grades` view for authenticated users. Returns `{ grades: CommunityGrade[], loading, error }`. Returns empty array for anon (view is auth-gated). Clears loading/error on sign-out.
+- `src/hooks/useConstraints.ts` — randomiser constraints engine. Signature: `useConstraints(perks, slots, setSlots, characterMap, role)` → `[ConstraintsState, ConstraintsActions, ConstraintsDerived]`. Manages pinned slots, blacklist, build size (1–4), category filters, and character filters. Computes eligible pool, conflict errors, and `canRandomise`. `randomise()` shuffles the eligible pool, preserves pins, fills up to `buildSize`. Persists all constraints to `localStorage` under `constraints_survivor` / `constraints_killer` (role-scoped); stale blacklist names are silently dropped on load. See ADR-0006 and ADR-0007.
 - `src/utils/perkUtils.ts` — `getPerkImageUrl(imagePath)` → `/perks/{filename}.png`.
 - `src/utils/categoryColors.ts` — `CATEGORY_COLORS` (Record mapping each `PerkCategory` slug to a hex color) and `getCategoryColor(categories)` helper. Colors applied to the octagonal perk icon border.
 - `src/utils/gradeColors.ts` — `GRADE_COLORS` (Record<Grade, hex>) and `GRADE_ORDER` (Record<Grade, number>) constants. Used by export canvas and stats chart.
@@ -86,7 +87,7 @@ Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, f
 - `src/components/CategoryFilter/CategoryFilter.tsx` — row of category toggle buttons rendered below the sort bar. Each button is styled in its category color; active = solid fill. Doubles as a visual legend. `available` prop is derived per-role so only relevant categories appear. Shows a Clear button when any filter is active.
 - `src/components/SortBar/SortBar.tsx` — sort field (name / character / grade) + direction toggle. Full ARIA toolbar pattern (`role="toolbar"`, `role="group"`, `aria-pressed`).
 - `src/components/PerkList/PerkList.tsx` — top-level tab bar (Perks / Build / Stats) with `<main>` landmark and full ARIA tab pattern. Perks tab has Survivor / Killer sub-tabs.
-- `src/components/BuildMaker/BuildMaker.tsx` — 4-slot build composer. Role toggle (clears build on switch), octagonal slot display, keyword search (name + character + HTML-stripped description), dense perk picker grid. Clicking a perk triggers a FLIP animation (ghost flies to the target slot via Web Animations API); clicking again removes it. Build summary below slots shows each perk's full description. Respects `prefers-reduced-motion`. Integrates `ExportToolbar` for share URL, copy text, and image download. Reads `?role=&p0–p3=` on mount to restore a shared build. A `urlReady` ref gates the URL-sync effect so it never fires before hydration completes. Save Build button opens `SaveBuildModal`; renders `SavedBuilds` below the picker.
+- `src/components/BuildMaker/BuildMaker.tsx` — 4-slot build composer. Role toggle (clears build on switch), octagonal slot display, keyword search (name + character + HTML-stripped description), dense perk picker grid. Clicking a perk triggers a FLIP animation (ghost flies to the target slot via Web Animations API); clicking again removes it. Each slot has a Pin button (disabled when empty, label toggles "Pin"/"Pinned"); removing a perk from a pinned slot auto-unpins it. A hero "Randomise Build" button shows the eligible count (or a warning if there is a constraint conflict) and calls `useConstraints.randomise()`. Build summary below slots shows each perk's full description. Respects `prefers-reduced-motion`. Integrates `ExportToolbar` for share URL, copy text, and image download. Reads `?role=&p0–p3=` on mount to restore a shared build. A `urlReady` ref gates the URL-sync effect so it never fires before hydration completes. Save Build button opens `SaveBuildModal`; renders `SavedBuilds` below the picker. Still contains `// PROTOTYPE` blocks (to be removed in issue #20).
 - `src/components/BuildMaker/ExportToolbar.tsx` — three export buttons (Share URL, Copy Text, Download Image). Buttons show a 2-second "Copied!" / confirmation state after clipboard writes.
 - `src/components/SaveBuildModal/SaveBuildModal.tsx` — modal for naming and saving the active build. Warns if fewer than 4 perks are selected. Escape to close, disabled Save button until name is non-empty. `role="dialog"`, `aria-modal`, `aria-labelledby`.
 - `src/components/DeleteBuildModal/DeleteBuildModal.tsx` — confirmation dialog for deleting a saved build. Shows build name, Cancel + Confirm actions, Escape to close.
@@ -116,8 +117,17 @@ Coverage: ~273 of 309 icons (~88%). Remaining ~36 are late-2024 chapters not yet
 ## Known Issues
 
 - **~36 perk icons missing** — most recent chapters (late 2024+) not yet available in any community asset repo. Placeholder shown automatically; will resolve as repos catch up.
+- **`useCommunityGrades.test.ts` pre-existing failure** — `supabase.rpc is not a function` in the `load failure shows info toast` test. Not caused by recent changes.
+
+## ADRs
+
+- `docs/adr/0006-pin-conflict-blocks-randomise.md` — pin + constraint conflicts block Randomise; no silent override.
+- `docs/adr/0007-constraints-persisted-to-localstorage.md` — constraints scoped by role (`constraints_survivor` / `constraints_killer`).
 
 ## Next Steps
 
-- **Random build generator** — a function that allows users to create a build from 4 randomly chosen perks.
+- **Constraints Panel** (issue #17) — drawer scaffold + Build Size control.
+- **Category & Character filters** (issue #18, blocked by #17) — inside the constraints drawer.
+- **Perk Blacklist** (issue #19, blocked by #17) — inside the constraints drawer.
+- **Constraint persistence + prototype cleanup** (issue #20, blocked by #18, #19) — Reset button, wire `resetConstraints`, delete `// PROTOTYPE` blocks.
 - **Community grades in Stats** — surface `useCommunityGrades` in the Stats tab to show community grade distribution alongside personal ratings.

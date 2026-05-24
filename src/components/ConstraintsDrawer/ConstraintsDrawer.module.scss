@@ -1,0 +1,102 @@
+.drawer {
+  margin: 0.5rem 0;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 1px solid var(--color-ember);
+  color: var(--color-parchment-dim);
+  font-family: var(--font-cinzel);
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &:hover {
+    background: rgba(255, 170, 0, 0.08);
+  }
+}
+
+.badge {
+  background: var(--color-ember);
+  color: #1a1008;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 0 0.35em;
+  min-width: 1.2em;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.caret {
+  font-size: 0.6rem;
+  transition: transform 0.2s ease;
+
+  &--open {
+    transform: rotate(180deg);
+  }
+}
+
+.panel {
+  border: 1px solid rgba(255, 170, 0, 0.2);
+  border-top: none;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 0 0 3px 3px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sectionLabel {
+  font-family: var(--font-cinzel);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-parchment-dim);
+  opacity: 0.7;
+}
+
+.sizePills {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.pill {
+  width: 2rem;
+  height: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 170, 0, 0.3);
+  color: var(--color-parchment-dim);
+  font-family: var(--font-cinzel);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 170, 0, 0.15);
+    border-color: var(--color-ember);
+  }
+
+  &--active {
+    background: var(--color-ember);
+    border-color: var(--color-ember);
+    color: #1a1008;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}

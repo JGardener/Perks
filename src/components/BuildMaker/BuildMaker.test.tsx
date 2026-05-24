@@ -59,6 +59,13 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
+describe("BuildMaker — ConstraintsDrawer integration", () => {
+  it("renders the Constraints toggle button", () => {
+    render(<BuildMaker {...defaultProps} />);
+    expect(screen.getByRole("button", { name: /constraints/i })).not.toBeNull();
+  });
+});
+
 describe("BuildMaker — pin slots", () => {
   it("renders a Pin button for each slot", () => {
     render(<BuildMaker {...defaultProps} />);
