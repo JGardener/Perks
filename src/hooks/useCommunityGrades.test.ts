@@ -6,7 +6,7 @@ import { useCommunityGrades } from "./useCommunityGrades";
 
 vi.mock("../services/supabase", () => ({
   supabase: {
-    from: vi.fn(),
+    rpc: vi.fn(),
   },
 }));
 
@@ -14,7 +14,7 @@ vi.mock("./useToast", () => ({
   useToast: vi.fn(),
 }));
 
-const mockFrom = vi.mocked(supabase.from);
+const mockRpc = vi.mocked(supabase.rpc);
 const mockUseToast = vi.mocked(useToast);
 
 beforeEach(() => {
@@ -30,9 +30,7 @@ describe("useCommunityGrades", () => {
     const showToast = vi.fn();
     mockUseToast.mockReturnValue({ showToast });
 
-    mockFrom.mockImplementationOnce(() => ({
-      select: vi.fn().mockResolvedValue({ data: null, error: { message: "DB error" } }),
-    }) as any);
+    mockRpc.mockResolvedValueOnce({ data: null, error: { message: "DB error" } });
 
     const { result } = renderHook(() => useCommunityGrades("user-123"));
 

@@ -117,7 +117,6 @@ Coverage: ~273 of 309 icons (~88%). Remaining ~36 are late-2024 chapters not yet
 ## Known Issues
 
 - **~36 perk icons missing** — most recent chapters (late 2024+) not yet available in any community asset repo. Placeholder shown automatically; will resolve as repos catch up.
-- **`useCommunityGrades.test.ts` pre-existing failure** — `supabase.rpc is not a function` in the `load failure shows info toast` test. Not caused by recent changes.
 
 ## ADRs
 
