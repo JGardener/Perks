@@ -100,3 +100,56 @@
     cursor: not-allowed;
   }
 }
+
+.filterGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.filterLabel {
+  flex: 1;
+  font-size: 0.8rem;
+  color: var(--color-parchment-dim);
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filterBtn {
+  width: 1.6rem;
+  height: 1.6rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 170, 0, 0.25);
+  color: var(--color-parchment-dim);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.12s, border-color 0.12s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 170, 0, 0.12);
+    border-color: var(--color-ember);
+  }
+
+  &--include {
+    background: rgba(255, 170, 0, 0.25);
+    border-color: var(--color-ember);
+    color: var(--color-ember);
+  }
+
+  &--exclude {
+    background: rgba(180, 60, 60, 0.25);
+    border-color: #b43c3c;
+    color: #e07070;
+  }
+}

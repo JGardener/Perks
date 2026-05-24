@@ -127,3 +127,113 @@ describe("ConstraintsDrawer", () => {
     expect((screen.getByRole("button", { name: "4" }) as HTMLButtonElement).disabled).toBe(false);
   });
 });
+
+describe("Category filters", () => {
+  it("renders Include and Exclude buttons for each available category when drawer is open", () => {
+    renderDrawer({}, {}, { availableCategories: ["chasing", "adaptation"] });
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    expect(screen.getByRole("button", { name: /include chasing/i })).not.toBeNull();
+    expect(screen.getByRole("button", { name: /exclude chasing/i })).not.toBeNull();
+    expect(screen.getByRole("button", { name: /include adaptation/i })).not.toBeNull();
+    expect(screen.getByRole("button", { name: /exclude adaptation/i })).not.toBeNull();
+  });
+
+  it("clicking Include calls toggleCategory with the category and 'include'", () => {
+    const toggleCategory = vi.fn();
+    renderDrawer({}, { toggleCategory }, { availableCategories: ["chasing"] });
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    fireEvent.click(screen.getByRole("button", { name: /include chasing/i }));
+    expect(toggleCategory).toHaveBeenCalledWith("chasing", "include");
+  });
+
+  it("clicking Exclude calls toggleCategory with the category and 'exclude'", () => {
+    const toggleCategory = vi.fn();
+    renderDrawer({}, { toggleCategory }, { availableCategories: ["chasing"] });
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    fireEvent.click(screen.getByRole("button", { name: /exclude chasing/i }));
+    expect(toggleCategory).toHaveBeenCalledWith("chasing", "exclude");
+  });
+
+  it("Include button has aria-pressed='true' when filter is 'include', 'false' otherwise", () => {
+    renderDrawer(
+      { categoryFilters: { chasing: "include" } },
+      {},
+      { availableCategories: ["chasing"] },
+    );
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    expect(screen.getByRole("button", { name: /include chasing/i }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: /exclude chasing/i }).getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("Exclude button has aria-pressed='true' when filter is 'exclude', 'false' otherwise", () => {
+    renderDrawer(
+      { categoryFilters: { chasing: "exclude" } },
+      {},
+      { availableCategories: ["chasing"] },
+    );
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    expect(screen.getByRole("button", { name: /exclude chasing/i }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: /include chasing/i }).getAttribute("aria-pressed")).toBe("false");
+  });
+});
+
+describe("Character filters", () => {
+  it("renders Include and Exclude buttons for each available character key when drawer is open", () => {
+    renderDrawer(
+      {},
+      {},
+      { availableCharacterKeys: ["base", "1"], getCharacterLabel: (k) => k === "base" ? "Base Perks" : "Dwight" },
+    );
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    expect(screen.getByRole("button", { name: /include base perks/i })).not.toBeNull();
+    expect(screen.getByRole("button", { name: /exclude base perks/i })).not.toBeNull();
+    expect(screen.getByRole("button", { name: /include dwight/i })).not.toBeNull();
+    expect(screen.getByRole("button", { name: /exclude dwight/i })).not.toBeNull();
+  });
+
+  it("clicking Include calls toggleCharacter with the key and 'include'", () => {
+    const toggleCharacter = vi.fn();
+    renderDrawer(
+      {},
+      { toggleCharacter },
+      { availableCharacterKeys: ["1"], getCharacterLabel: () => "Dwight" },
+    );
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    fireEvent.click(screen.getByRole("button", { name: /include dwight/i }));
+    expect(toggleCharacter).toHaveBeenCalledWith("1", "include");
+  });
+
+  it("clicking Exclude calls toggleCharacter with the key and 'exclude'", () => {
+    const toggleCharacter = vi.fn();
+    renderDrawer(
+      {},
+      { toggleCharacter },
+      { availableCharacterKeys: ["1"], getCharacterLabel: () => "Dwight" },
+    );
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    fireEvent.click(screen.getByRole("button", { name: /exclude dwight/i }));
+    expect(toggleCharacter).toHaveBeenCalledWith("1", "exclude");
+  });
+
+  it("Include button has aria-pressed='true' when character filter is 'include'", () => {
+    renderDrawer(
+      { characterFilters: { "1": "include" } },
+      {},
+      { availableCharacterKeys: ["1"], getCharacterLabel: () => "Dwight" },
+    );
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    expect(screen.getByRole("button", { name: /include dwight/i }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: /exclude dwight/i }).getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("Exclude button has aria-pressed='true' when character filter is 'exclude'", () => {
+    renderDrawer(
+      { characterFilters: { "1": "exclude" } },
+      {},
+      { availableCharacterKeys: ["1"], getCharacterLabel: () => "Dwight" },
+    );
+    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    expect(screen.getByRole("button", { name: /exclude dwight/i }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: /include dwight/i }).getAttribute("aria-pressed")).toBe("false");
+  });
+});

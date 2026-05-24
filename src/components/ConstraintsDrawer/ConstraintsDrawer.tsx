@@ -1,6 +1,48 @@
 import { useState } from "react";
-import type { ConstraintsActions, ConstraintsDerived, ConstraintsState } from "../../hooks/useConstraints";
+import type { ConstraintsActions, ConstraintsDerived, ConstraintsState, FilterState } from "../../hooks/useConstraints";
 import styles from "./ConstraintsDrawer.module.scss";
+
+function FilterSection({ label, items, filters, getLabel, onToggle }: {
+  label: string;
+  items: string[];
+  filters: Record<string, FilterState>;
+  getLabel: (key: string) => string;
+  onToggle: (key: string, value: FilterState) => void;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <div className={styles.section}>
+      <span className={styles.sectionLabel}>{label}</span>
+      <div className={styles.filterGrid}>
+        {items.map((key) => {
+          const displayLabel = getLabel(key);
+          const fs = filters[key] ?? "neutral";
+          return (
+            <div key={key} className={styles.filterRow}>
+              <span className={styles.filterLabel}>{displayLabel}</span>
+              <button
+                className={`${styles.filterBtn} ${fs === "include" ? styles["filterBtn--include"] : ""}`}
+                aria-pressed={fs === "include"}
+                onClick={() => onToggle(key, "include")}
+                aria-label={`Include ${displayLabel}`}
+              >
+                +
+              </button>
+              <button
+                className={`${styles.filterBtn} ${fs === "exclude" ? styles["filterBtn--exclude"] : ""}`}
+                aria-pressed={fs === "exclude"}
+                onClick={() => onToggle(key, "exclude")}
+                aria-label={`Exclude ${displayLabel}`}
+              >
+                −
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 interface Props {
   state: ConstraintsState;
@@ -10,9 +52,9 @@ interface Props {
 
 export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
   const [open, setOpen] = useState(false);
-  const { buildSize } = state;
-  const { setBuildSize } = actions;
-  const { activeConstraintCount, pinnedCount } = derived;
+  const { buildSize, categoryFilters, characterFilters } = state;
+  const { setBuildSize, toggleCategory, toggleCharacter } = actions;
+  const { activeConstraintCount, pinnedCount, availableCategories, availableCharacterKeys, getCharacterLabel } = derived;
 
   return (
     <div className={styles.drawer}>
@@ -46,6 +88,22 @@ export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
               ))}
             </div>
           </div>
+
+          <FilterSection
+            label="Categories"
+            items={availableCategories}
+            filters={categoryFilters}
+            getLabel={(k) => k}
+            onToggle={toggleCategory}
+          />
+
+          <FilterSection
+            label="Characters"
+            items={availableCharacterKeys}
+            filters={characterFilters}
+            getLabel={getCharacterLabel}
+            onToggle={toggleCharacter}
+          />
         </div>
       )}
     </div>
