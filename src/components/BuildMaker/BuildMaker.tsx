@@ -10,14 +10,6 @@ import { SaveBuildModal } from "../SaveBuildModal/SaveBuildModal";
 import { SavedBuilds } from "../SavedBuilds/SavedBuilds";
 import styles from "./BuildMaker.module.scss";
 import { ExportToolbar } from "./ExportToolbar";
-// PROTOTYPE — remove these imports when done
-import { useConstraintsProto } from "./prototype/useConstraintsProto";
-import { VariantAPanel } from "./prototype/VariantAPanel";
-import { VariantBHero } from "./prototype/VariantBHero";
-import { VariantCStrip } from "./prototype/VariantCStrip";
-import { PrototypeSwitcher } from "./prototype/PrototypeSwitcher";
-import protoStyles from "./prototype/proto.module.scss";
-// END PROTOTYPE
 
 const OCTAGON = "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)";
 
@@ -127,15 +119,6 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
   const [constraints, constraintActions, constraintDerived] = useConstraints(
     perks, slots, setSlots, characterMap, role
   );
-
-  // PROTOTYPE — variant switching without page reload
-  const [protoVariant, setProtoVariant] = useState<string | null>(() =>
-    import.meta.env.DEV ? new URLSearchParams(window.location.search).get("variant") : null
-  );
-  const [proto, protoActions, protoDerived] = useConstraintsProto(
-    perks, slots, setSlots, characterMap
-  );
-  // END PROTOTYPE
 
   const slotRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
   const hydrated = useRef(false);
@@ -325,7 +308,7 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
       <div className={styles.topBand}>
         <div className={styles.buildSlots}>
           {slots.map((perk, i) => (
-            <div key={i} className={styles.slot} style={protoVariant ? { position: "relative" } : undefined}>
+            <div key={i} className={styles.slot}>
               <div
                 ref={(el) => { slotRefs.current[i] = el; }}
                 className={styles["slot__octa"]}
@@ -349,39 +332,14 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
                   <span className={styles["slot__plus"]}>+</span>
                 )}
               </div>
-              {/* PROTOTYPE pin badge (Variants A + C) */}
-              {protoVariant && protoVariant !== "B" && perk && (
-                <button
-                  className={`${protoStyles.pinBadge} ${proto.pinnedSlots.has(i) ? "" : protoStyles["pinBadge--off"]}`}
-                  onClick={(e) => { e.stopPropagation(); protoActions.togglePin(i); }}
-                  aria-label={proto.pinnedSlots.has(i) ? `Unpin ${perk.name}` : `Pin ${perk.name}`}
-                  title={proto.pinnedSlots.has(i) ? "Unpin slot" : "Pin slot (always include in randomise)"}
-                >
-                  {proto.pinnedSlots.has(i) ? "🔒" : "🔓"}
-                </button>
-              )}
               <span className={styles["slot__name"]}>{perk?.name ?? " "}</span>
-              {/* PROTOTYPE pin button below name (Variant B) */}
-              {protoVariant === "B" && (
-                <button
-                  className={`${protoStyles.varB_pinBtn} ${proto.pinnedSlots.has(i) ? protoStyles["varB_pinBtn--pinned"] : ""}`}
-                  onClick={() => protoActions.togglePin(i)}
-                  disabled={!perk}
-                >
-                  {proto.pinnedSlots.has(i) ? "Pinned" : "Pin"}
-                </button>
-              )}
-              {/* END PROTOTYPE */}
-              {/* Production pin button */}
-              {!protoVariant && (
-                <button
-                  className={`${styles["slot__pinBtn"]} ${constraints.pinnedSlots.has(i) ? styles["slot__pinBtn--pinned"] : ""}`}
-                  onClick={() => constraintActions.togglePin(i)}
-                  disabled={!perk}
-                >
-                  {constraints.pinnedSlots.has(i) ? "Pinned" : "Pin"}
-                </button>
-              )}
+              <button
+                className={`${styles["slot__pinBtn"]} ${constraints.pinnedSlots.has(i) ? styles["slot__pinBtn--pinned"] : ""}`}
+                onClick={() => constraintActions.togglePin(i)}
+                disabled={!perk}
+              >
+                {constraints.pinnedSlots.has(i) ? "Pinned" : "Pin"}
+              </button>
             </div>
           ))}
         </div>
@@ -416,36 +374,26 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
         </div>
       </div>
 
-      {/* PROTOTYPE — constraint UI variants */}
-      {protoVariant === "A" && <VariantAPanel state={proto} actions={protoActions} derived={protoDerived} />}
-      {protoVariant === "B" && <VariantBHero state={proto} actions={protoActions} derived={protoDerived} />}
-      {protoVariant === "C" && <VariantCStrip state={proto} actions={protoActions} derived={protoDerived} />}
-      {/* END PROTOTYPE */}
-
       {/* Constraints drawer */}
-      {!protoVariant && (
-        <ConstraintsDrawer
-          state={constraints}
-          actions={constraintActions}
-          derived={constraintDerived}
-        />
-      )}
+      <ConstraintsDrawer
+        state={constraints}
+        actions={constraintActions}
+        derived={constraintDerived}
+      />
 
       {/* Hero Randomise button */}
-      {!protoVariant && (
-        <div className={styles.randomiseRow}>
-          <button
-            className={styles.randomiseBtn}
-            onClick={constraintActions.randomise}
-            disabled={!constraintDerived.canRandomise}
-          >
-            Randomise Build
-            <span className={`${styles.randomisePool} ${constraintDerived.constraintError ? styles["randomisePool--warn"] : ""}`}>
-              {constraintDerived.constraintError ?? `${constraintDerived.eligibleCount} perk${constraintDerived.eligibleCount !== 1 ? "s" : ""} eligible`}
-            </span>
-          </button>
-        </div>
-      )}
+      <div className={styles.randomiseRow}>
+        <button
+          className={styles.randomiseBtn}
+          onClick={constraintActions.randomise}
+          disabled={!constraintDerived.canRandomise}
+        >
+          Randomise Build
+          <span className={`${styles.randomisePool} ${constraintDerived.constraintError ? styles["randomisePool--warn"] : ""}`}>
+            {constraintDerived.constraintError ?? `${constraintDerived.eligibleCount} perk${constraintDerived.eligibleCount !== 1 ? "s" : ""} eligible`}
+          </span>
+        </button>
+      </div>
 
       {/* Middle band: descriptions (left) + picker (right) */}
       <div className={styles.middleBand}>
@@ -492,53 +440,8 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
           <div className={styles.picker}>
             {filteredPerks.map((perk) => {
               const active = inBuild.has(perk.name);
-              const banned = protoVariant ? proto.blacklist.has(perk.name) : constraints.blacklist.has(perk.name);
+              const banned = constraints.blacklist.has(perk.name);
               const dimmed = !active && (isFull || banned);
-
-              const pickerBtn = (
-                <button
-                  className={`${styles["pickerItem"]} ${active ? styles["pickerItem--active"] : ""} ${dimmed ? styles["pickerItem--dimmed"] : ""}`}
-                  style={protoVariant ? { width: "100%" } : undefined}
-                  onClick={(e) => handlePickerClick(perk, e.currentTarget)}
-                  disabled={!active && isFull}
-                  title={banned ? `${perk.name} (blacklisted — click ⊘ to remove)` : perk.name}
-                >
-                  <div
-                    className={styles["pickerItem__octa"]}
-                    data-active={String(active)}
-                    data-octa
-                    style={{ opacity: flight?.perk.name === perk.name ? 0 : 1 }}
-                  >
-                    <img
-                      className={styles["pickerItem__img"]}
-                      style={{ clipPath: OCTAGON }}
-                      src={getPerkImageUrl(perk.image)}
-                      alt={perk.name}
-                      onError={(e) => (e.currentTarget.src = "/perk-placeholder.svg")}
-                    />
-                  </div>
-                  <span className={styles["pickerItem__name"]}>{perk.name}</span>
-                </button>
-              );
-
-              // PROTOTYPE: wrap in a div so ban button can sit outside the picker <button>
-              // (nested <button> inside <button> is invalid HTML and breaks click handling)
-              if (protoVariant) {
-                return (
-                  <div key={perk.name} style={{ position: "relative" }}>
-                    {pickerBtn}
-                    <button
-                      className={`${protoStyles.banBtn} ${banned ? protoStyles["banBtn--active"] : ""}`}
-                      onClick={() => protoActions.toggleBlacklist(perk.name)}
-                      aria-label={banned ? `Remove ${perk.name} from blacklist` : `Exclude ${perk.name} from randomiser`}
-                      title={banned ? "Remove from blacklist" : "Exclude from randomiser"}
-                    >
-                      ⊘
-                    </button>
-                  </div>
-                );
-              }
-              // END PROTOTYPE
 
               return (
                 <div key={perk.name} style={{ position: "relative" }}>
@@ -590,11 +493,6 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
         onDelete={onDelete}
       />
 
-      {/* PROTOTYPE switcher */}
-      {protoVariant && (
-        <PrototypeSwitcher current={protoVariant} onChange={setProtoVariant} />
-      )}
-      {/* END PROTOTYPE */}
     </div>
   );
 };

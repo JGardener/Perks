@@ -177,6 +177,25 @@ describe("Category filters", () => {
   });
 });
 
+describe("Reset button", () => {
+  it("Reset button appears when activeConstraintCount > 0", () => {
+    renderDrawer({}, {}, { activeConstraintCount: 2 });
+    expect(screen.getByRole("button", { name: /reset/i })).not.toBeNull();
+  });
+
+  it("Reset button is not shown when activeConstraintCount is 0", () => {
+    renderDrawer({}, {}, { activeConstraintCount: 0 });
+    expect(screen.queryByRole("button", { name: /reset/i })).toBeNull();
+  });
+
+  it("clicking Reset calls actions.resetConstraints", () => {
+    const resetConstraints = vi.fn();
+    renderDrawer({}, { resetConstraints }, { activeConstraintCount: 1 });
+    fireEvent.click(screen.getByRole("button", { name: /reset/i }));
+    expect(resetConstraints).toHaveBeenCalledOnce();
+  });
+});
+
 describe("Blacklist / Banned Perks", () => {
   it("renders a chip for each blacklisted perk name when drawer is open", () => {
     renderDrawer({ blacklist: new Set(["Dead Hard", "Adrenaline"]) });

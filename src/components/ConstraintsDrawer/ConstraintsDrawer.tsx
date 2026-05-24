@@ -53,22 +53,29 @@ interface Props {
 export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
   const [open, setOpen] = useState(false);
   const { buildSize, blacklist, categoryFilters, characterFilters } = state;
-  const { setBuildSize, toggleBlacklist, toggleCategory, toggleCharacter } = actions;
+  const { setBuildSize, toggleBlacklist, toggleCategory, toggleCharacter, resetConstraints } = actions;
   const { activeConstraintCount, pinnedCount, availableCategories, availableCharacterKeys, getCharacterLabel } = derived;
 
   return (
     <div className={styles.drawer}>
-      <button
-        className={styles.toggle}
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-      >
-        Constraints
+      <div className={styles.toggleRow}>
+        <button
+          className={styles.toggle}
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+        >
+          Constraints
+          {activeConstraintCount > 0 && (
+            <span className={styles.badge}>{activeConstraintCount}</span>
+          )}
+          <span className={`${styles.caret} ${open ? styles["caret--open"] : ""}`}>▼</span>
+        </button>
         {activeConstraintCount > 0 && (
-          <span className={styles.badge}>{activeConstraintCount}</span>
+          <button className={styles.resetBtn} onClick={resetConstraints}>
+            Reset
+          </button>
         )}
-        <span className={`${styles.caret} ${open ? styles["caret--open"] : ""}`}>▼</span>
-      </button>
+      </div>
 
       {open && (
         <div className={styles.panel}>
