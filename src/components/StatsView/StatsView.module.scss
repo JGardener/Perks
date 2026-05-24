@@ -83,6 +83,78 @@
   dominant-baseline: middle;
 }
 
+// ── Community section ─────────────────────────────────────────────────────────
+
+.communityLabel {
+  font-family: var(--font-label);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--secondary-text-color);
+  margin: 24px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.signInLink {
+  font-family: var(--font-label);
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  background: none;
+  border: none;
+  color: var(--color-ember);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.pillStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  list-style: none;
+  padding: 0;
+
+  &--ghost {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: 3px;
+  padding: 5px 10px;
+}
+
+.pill__grade {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 10px;
+}
+
+.pill__bar {
+  height: 8px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.pill__pct {
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--secondary-text-color);
+  min-width: 28px;
+}
+
 // ── TopPerks ──────────────────────────────────────────────────────────────────
 
 .topPerks {

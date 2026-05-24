@@ -44,7 +44,7 @@ docs/
 
 ## Current State (as of 2026-05-24)
 
-Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, filter by rating, mobile responsiveness, stats view, export/share, saved builds backend, community grade aggregation, saved builds UI, `useConstraints` hook (randomiser logic + localStorage persistence), pin-slot buttons, and the full constraints drawer (build size, perk blacklist, category/character filters, reset) are all done.
+Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, filter by rating, mobile responsiveness, stats view, export/share, saved builds backend, community grade aggregation, saved builds UI, `useConstraints` hook (randomiser logic + localStorage persistence), pin-slot buttons, the full constraints drawer (build size, perk blacklist, category/character filters, reset), and community grades in the Stats tab are all done.
 
 ### Data & API
 
@@ -95,8 +95,9 @@ Core data pipeline, theming, perk rating, build maker, auth, Supabase backend, f
 - `src/components/SavedBuilds/SavedBuilds.tsx` — "Your Builds" section rendered below the build picker. Shows a sign-in prompt for anon users; empty state for authenticated users with no saved builds; otherwise a card list filtered to the current role. Each `SavedBuildCard` shows the build name, a 4-icon strip, Load and Delete buttons. Load prompts for confirmation ("Replace build in progress?") if the current build has perks. Delete opens `DeleteBuildModal`.
 - `src/components/AuthModal/AuthModal.tsx` — sign in / create account modal. Focus trap, Escape key handling, `aria-labelledby`, `role="alert"` on errors, `role="status"` on success, `autoComplete` attributes.
 - `src/components/RatingFilter/RatingFilter.tsx` — row of A–F + Unrated toggle buttons rendered below the category filter. Each grade has a distinct tier-list color (green → blue → amber → orange → light red → blood red). `active` is a `Set<Grade | "unrated">`; multi-select, composable with the category filter. Shows a Clear button when any filter is active.
-- `src/components/StatsView/StatsView.tsx` — Stats tab root. Shows an empty state if no perks are rated; otherwise renders a `GradeChart` + `TopPerks` section for each role. Computes distribution and A-grade perk lists with `useMemo`.
+- `src/components/StatsView/StatsView.tsx` — Stats tab root. Shows an empty state if no perks are rated; otherwise renders a `GradeChart` + `TopPerks` + community section for each role. Uses `useAuth` and `useAuthModal` directly. Authenticated users with community data see a `GradePillStrip` and community top picks; anon users see a ghosted placeholder strip with a sign-in nudge.
 - `src/components/StatsView/GradeChart.tsx` — SVG horizontal bar chart. Bars are normalised to the tallest grade count; each bar is filled with `GRADE_COLORS[grade]`. Accessible via `role="img"` + `<title>` + `aria-label` on each bar.
+- `src/components/StatsView/GradePillStrip.tsx` — horizontal row of grade pills showing community distribution. Each pill: grade letter + mini bar (width proportional to % share) + percentage. Bar and letter colored by `GRADE_COLORS[grade]`. Pill border uses the grade color at 33% opacity.
 - `src/components/StatsView/TopPerks.tsx` — scrollable row of octagonal perk icons for all A-rated perks, with name labels below.
 
 ### Styles & Theme
@@ -126,4 +127,4 @@ Coverage: ~273 of 309 icons (~88%). Remaining ~36 are late-2024 chapters not yet
 
 ## Next Steps
 
-- **Community grades in Stats** — surface `useCommunityGrades` in the Stats tab to show community grade distribution alongside personal ratings.
+- No outstanding items.
