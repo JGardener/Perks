@@ -86,4 +86,3 @@ Perk and character data: [`dbd.tricky.lol`](https://dbd.tricky.lol/apidocs/) —
 ## Known issues
 
 - **~36 perk icons missing** — most recent chapters (late 2024+) not yet available in any community asset repo. Placeholder shown automatically; will resolve as repos catch up.
-- **Constraints Panel not yet built** — the Randomise button and pin slots are wired up, but the full constraints UI (blacklist, category/character filters, build size picker) is behind issues #17–#20.
