@@ -1,7 +1,28 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import type { ReactElement } from "react";
+import { describe, expect, it, vi } from "vitest";
+import { AuthModalContext } from "../../context/AuthModalContext";
 import type { CommunityGrade, Grade, Perk } from "../../types/dbd";
 import { StatsView } from "./StatsView";
+
+// Community section is gated on an authenticated user; sign one in.
+vi.mock("../../hooks/useAuth", () => ({
+  useAuth: () => ({
+    user: { id: "u1" },
+    loading: false,
+    signIn: vi.fn(),
+    signUp: vi.fn(),
+    signOut: vi.fn(),
+    signInWithGoogle: vi.fn(),
+  }),
+}));
+
+const renderWithAuthModal = (ui: ReactElement) =>
+  render(
+    <AuthModalContext.Provider value={{ openAuthModal: () => {} }}>
+      {ui}
+    </AuthModalContext.Provider>,
+  );
 
 const makePerk = (name: string, role: "survivor" | "killer" = "survivor"): Perk => ({
   name,
@@ -27,7 +48,7 @@ const ratings: Record<string, Grade> = { "Iron Will": "A" };
 
 describe("StatsView — community top picks", () => {
   it("does not render Community's Top Picks when no perk has any A-votes", () => {
-    render(
+    renderWithAuthModal(
       <StatsView
         perks={[IRON_WILL]}
         ratings={ratings}
@@ -39,7 +60,7 @@ describe("StatsView — community top picks", () => {
   });
 
   it("does not render Community's Top Picks when communityGrades is empty", () => {
-    render(
+    renderWithAuthModal(
       <StatsView
         perks={[IRON_WILL]}
         ratings={ratings}
@@ -51,7 +72,7 @@ describe("StatsView — community top picks", () => {
   });
 
   it("renders Community's Top Picks section when communityGrades has A-votes", () => {
-    render(
+    renderWithAuthModal(
       <StatsView
         perks={[IRON_WILL, DEAD_HARD, CORRUPT]}
         ratings={ratings}

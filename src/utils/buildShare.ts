@@ -1,4 +1,5 @@
 import type { Perk } from "../types/dbd";
+import { buildToSlots } from "./buildToSlots";
 
 export function encodeBuild(role: "survivor" | "killer", slots: (Perk | null)[]): string {
   const params = new URLSearchParams();
@@ -18,11 +19,6 @@ export function decodeBuild(
   const role: "survivor" | "killer" =
     rawRole === "killer" ? "killer" : "survivor";
 
-  const byName = new Map(allPerks.map((p) => [p.name, p]));
-  const slots: (Perk | null)[] = [0, 1, 2, 3].map((i) => {
-    const name = params.get(`p${i}`);
-    return name ? (byName.get(name) ?? null) : null;
-  });
-
-  return { role, slots };
+  const names = [0, 1, 2, 3].map((i) => params.get(`p${i}`));
+  return { role, slots: buildToSlots(names, allPerks) };
 }

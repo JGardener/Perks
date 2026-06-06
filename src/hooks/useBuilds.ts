@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
 import type { Build } from "../types/dbd";
+import { validateBuild } from "../../supabase/functions/_shared/buildRules.ts";
 import { useToast } from "./useToast";
 
 export const useBuilds = (userId: string | null) => {
@@ -49,6 +50,14 @@ export const useBuilds = (userId: string | null) => {
       isPublic = false,
     ): Promise<Build | null> => {
       if (!userId) return null;
+
+      // Optimistic gate: same rules the edge function enforces, so an invalid
+      // build fails instantly without a round-trip. Edge remains authoritative.
+      const local = validateBuild({ role, perks });
+      if (!local.valid) {
+        setError(local.errors.join(", ") || "Invalid build");
+        return null;
+      }
 
       const { data: validateData, error: validateError } =
         await supabase.functions.invoke("validate-build", {

@@ -3,6 +3,7 @@ import type { Build, Perk } from "../../types/dbd";
 import { useConstraints } from "../../hooks/useConstraints";
 import { useToast } from "../../hooks/useToast";
 import { decodeBuild, encodeBuild } from "../../utils/buildShare";
+import { buildToSlots } from "../../utils/buildToSlots";
 import { exportBuildImage } from "../../utils/exportCanvas";
 import { getPerkImageUrl, resolveDescription } from "../../utils/perkUtils";
 import { ConstraintsDrawer } from "../ConstraintsDrawer/ConstraintsDrawer";
@@ -237,12 +238,7 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
   };
 
   const handleLoadBuild = (build: Build) => {
-    const perkMap = new Map(perks.map((p) => [p.name, p]));
-    const newSlots = Array.from({ length: 4 }, (_, i) => {
-      const name = build.perks[i] ?? null;
-      return name ? (perkMap.get(name) ?? null) : null;
-    });
-    setSlots(newSlots);
+    setSlots(buildToSlots(build.perks, perks));
     setFlight(null);
   };
 
