@@ -279,3 +279,17 @@
     color: #e07070;
   }
 }
+
+.filterHint {
+  font-size: 0.62rem;
+  color: var(--color-parchment-dim);
+  opacity: 0.45;
+  font-family: var(--font-cinzel);
+  letter-spacing: 0.04em;
+}
+
+.filterActive {
+  font-size: 0.7rem;
+  color: var(--color-ember);
+  opacity: 0.9;
+}

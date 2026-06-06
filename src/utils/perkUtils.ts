@@ -1,3 +1,5 @@
+import DOMPurify from 'dompurify';
+
 export const getPerkImageUrl = (imagePath: string) => {
   return `/perks/${imagePath.split("/").pop() ?? ""}.png`;
 };
@@ -12,7 +14,7 @@ export function resolveDescription(
   description: string,
   tunables: Record<string, number[]> | null,
 ): string {
-  return description
+  const raw = description
     .replace(/\{Tunable\.[^.}]+\.([^}]+)\}/g, (_match, varName: string) => {
       const key = varName.toLowerCase();
       const values = tunables?.[key];
@@ -25,4 +27,9 @@ export function resolveDescription(
     .replace(/\{(Input\.[^}]+)\}/g, (_match, key: string) =>
       `<kbd>${INPUT_LABELS[key] ?? key}</kbd>`,
     );
+
+  return DOMPurify.sanitize(raw, {
+    ALLOWED_TAGS: ['span', 'kbd'],
+    ALLOWED_ATTR: ['class'],
+  });
 }

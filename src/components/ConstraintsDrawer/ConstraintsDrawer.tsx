@@ -10,9 +10,14 @@ function FilterSection({ label, items, filters, getLabel, onToggle }: {
   onToggle: (key: string, value: FilterState) => void;
 }) {
   if (items.length === 0) return null;
+  const included = items.filter((k) => (filters[k] ?? "neutral") === "include");
   return (
     <div className={styles.section}>
       <span className={styles.sectionLabel}>{label}</span>
+      <span className={styles.filterHint}>+ = only selected · − = skip selected</span>
+      {included.length > 0 && (
+        <span className={styles.filterActive}>Only: {included.map(getLabel).join(", ")}</span>
+      )}
       <div className={styles.filterGrid}>
         {items.map((key) => {
           const displayLabel = getLabel(key);
@@ -24,7 +29,8 @@ function FilterSection({ label, items, filters, getLabel, onToggle }: {
                 className={`${styles.filterBtn} ${fs === "include" ? styles["filterBtn--include"] : ""}`}
                 aria-pressed={fs === "include"}
                 onClick={() => onToggle(key, "include")}
-                aria-label={`Include ${displayLabel}`}
+                aria-label={`Only randomise from ${displayLabel}`}
+                title={`Only: restrict pool to ${displayLabel}`}
               >
                 +
               </button>
@@ -33,6 +39,7 @@ function FilterSection({ label, items, filters, getLabel, onToggle }: {
                 aria-pressed={fs === "exclude"}
                 onClick={() => onToggle(key, "exclude")}
                 aria-label={`Exclude ${displayLabel}`}
+                title={`Skip: exclude ${displayLabel} from pool`}
               >
                 −
               </button>

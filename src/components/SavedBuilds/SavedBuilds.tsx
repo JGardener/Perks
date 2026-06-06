@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Build, Perk } from "../../types/dbd";
 import { DeleteBuildModal } from "../DeleteBuildModal/DeleteBuildModal";
 import { getPerkImageUrl } from "../../utils/perkUtils";
+import { buildToSlots } from "../../utils/buildToSlots";
 import styles from "./SavedBuilds.module.scss";
 
 const OCTAGON = "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)";
@@ -38,11 +39,7 @@ const SavedBuildCard = ({
   onLoadCancel,
   onDeleteClick,
 }: SavedBuildCardProps) => {
-  const perkMap = new Map(perks.map((p) => [p.name, p]));
-  const slots = Array.from({ length: 4 }, (_, i) => {
-    const name = build.perks[i] ?? null;
-    return name ? (perkMap.get(name) ?? null) : null;
-  });
+  const slots = buildToSlots(build.perks, perks);
   const isPending = pendingLoadId === build.id;
 
   return (

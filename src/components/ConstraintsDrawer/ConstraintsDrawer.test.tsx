@@ -133,9 +133,9 @@ describe("Category filters", () => {
   it("renders Include and Exclude buttons for each available category when drawer is open", () => {
     renderDrawer({}, {}, { availableCategories: ["chasing", "adaptation"] });
     fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    expect(screen.getByRole("button", { name: /include chasing/i })).not.toBeNull();
+    expect(screen.getByRole("button", { name: /only randomise from chasing/i })).not.toBeNull();
     expect(screen.getByRole("button", { name: /exclude chasing/i })).not.toBeNull();
-    expect(screen.getByRole("button", { name: /include adaptation/i })).not.toBeNull();
+    expect(screen.getByRole("button", { name: /only randomise from adaptation/i })).not.toBeNull();
     expect(screen.getByRole("button", { name: /exclude adaptation/i })).not.toBeNull();
   });
 
@@ -143,7 +143,7 @@ describe("Category filters", () => {
     const toggleCategory = vi.fn();
     renderDrawer({}, { toggleCategory }, { availableCategories: ["chasing"] });
     fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    fireEvent.click(screen.getByRole("button", { name: /include chasing/i }));
+    fireEvent.click(screen.getByRole("button", { name: /only randomise from chasing/i }));
     expect(toggleCategory).toHaveBeenCalledWith("chasing", "include");
   });
 
@@ -162,7 +162,7 @@ describe("Category filters", () => {
       { availableCategories: ["chasing"] },
     );
     fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    expect(screen.getByRole("button", { name: /include chasing/i }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: /only randomise from chasing/i }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByRole("button", { name: /exclude chasing/i }).getAttribute("aria-pressed")).toBe("false");
   });
 
@@ -174,7 +174,7 @@ describe("Category filters", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
     expect(screen.getByRole("button", { name: /exclude chasing/i }).getAttribute("aria-pressed")).toBe("true");
-    expect(screen.getByRole("button", { name: /include chasing/i }).getAttribute("aria-pressed")).toBe("false");
+    expect(screen.getByRole("button", { name: /only randomise from chasing/i }).getAttribute("aria-pressed")).toBe("false");
   });
 });
 
@@ -228,9 +228,9 @@ describe("Character filters", () => {
       { availableCharacterKeys: ["base", "1"], getCharacterLabel: (k) => k === "base" ? "Base Perks" : "Dwight" },
     );
     fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    expect(screen.getByRole("button", { name: /include base perks/i })).not.toBeNull();
+    expect(screen.getByRole("button", { name: /only randomise from base perks/i })).not.toBeNull();
     expect(screen.getByRole("button", { name: /exclude base perks/i })).not.toBeNull();
-    expect(screen.getByRole("button", { name: /include dwight/i })).not.toBeNull();
+    expect(screen.getByRole("button", { name: /only randomise from dwight/i })).not.toBeNull();
     expect(screen.getByRole("button", { name: /exclude dwight/i })).not.toBeNull();
   });
 
@@ -242,7 +242,7 @@ describe("Character filters", () => {
       { availableCharacterKeys: ["1"], getCharacterLabel: () => "Dwight" },
     );
     fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    fireEvent.click(screen.getByRole("button", { name: /include dwight/i }));
+    fireEvent.click(screen.getByRole("button", { name: /only randomise from dwight/i }));
     expect(toggleCharacter).toHaveBeenCalledWith("1", "include");
   });
 
@@ -265,7 +265,7 @@ describe("Character filters", () => {
       { availableCharacterKeys: ["1"], getCharacterLabel: () => "Dwight" },
     );
     fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    expect(screen.getByRole("button", { name: /include dwight/i }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: /only randomise from dwight/i }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByRole("button", { name: /exclude dwight/i }).getAttribute("aria-pressed")).toBe("false");
   });
 
@@ -277,6 +277,6 @@ describe("Character filters", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
     expect(screen.getByRole("button", { name: /exclude dwight/i }).getAttribute("aria-pressed")).toBe("true");
-    expect(screen.getByRole("button", { name: /include dwight/i }).getAttribute("aria-pressed")).toBe("false");
+    expect(screen.getByRole("button", { name: /only randomise from dwight/i }).getAttribute("aria-pressed")).toBe("false");
   });
 });
