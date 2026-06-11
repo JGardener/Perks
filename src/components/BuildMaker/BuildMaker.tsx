@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import type { Build, Perk } from "../../types/dbd";
 import { useConstraints } from "../../hooks/useConstraints";
 import { useToast } from "../../hooks/useToast";
@@ -158,21 +159,34 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
 
   const isFull = inBuild.size >= 4;
 
+  const location = useLocation();
+  const [, setSearchParams] = useSearchParams();
+  // setSearchParams gets a new identity every render in react-router v7;
+  // keep the latest in a ref so the sync effect's deps stay [role, slots]
+  // (including it would re-fire the effect on every render).
+  const setSearchParamsRef = useRef(setSearchParams);
+  setSearchParamsRef.current = setSearchParams;
+
   // Hydrate build from URL once perks are loaded (runs once)
   useEffect(() => {
     if (hydrated.current) return;
     if (!perks.length) return;
     hydrated.current = true;
     urlReady.current = true;
-    const result = decodeBuild(window.location.search, perks);
+    const result = decodeBuild(location.search, perks);
     if (!result) return;
     setSlots(result.slots);
+    // location.search is read once at hydration by design — later URL
+    // changes flow FROM this component, not into it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [perks]);
 
-  // Keep URL in sync with build state (only after initial hydration)
+  // Keep URL in sync with build state (only after initial hydration).
+  // BuildMaker is the single URL writer on /build — RoleToggle and
+  // navigation must not write ?role=/p0..p3 here (see ADR-0008).
   useEffect(() => {
     if (!urlReady.current) return;
-    window.history.replaceState(null, "", "?" + encodeBuild(role, slots));
+    setSearchParamsRef.current(new URLSearchParams(encodeBuild(role, slots)), { replace: true });
   }, [role, slots]);
 
   const removeSlot = (i: number) => {
