@@ -102,8 +102,8 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 
 .loadBtn {
   background: none;
-  border: 1px solid var(--color-ember-dim, rgba(215, 147, 50, 0.4));
-  color: var(--color-ember);
+  border: 1px solid var(--color-ember-dim);
+  color: var(--bw-accent-bright);
   cursor: pointer;
   font-family: var(--font-heading);
   font-size: 0.65rem;
@@ -118,8 +118,8 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 
 .deleteBtn {
   background: none;
-  border: 1px solid rgba(139, 26, 26, 0.4);
-  color: var(--color-blood, #8b1a1a);
+  border: 1px solid var(--bw-border-strong);
+  color: var(--bw-accent-bright);
   cursor: pointer;
   font-family: var(--font-heading);
   font-size: 0.65rem;
@@ -128,7 +128,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   text-transform: uppercase;
 
   &:hover {
-    border-color: var(--color-blood, #8b1a1a);
+    border-color: var(--bw-accent);
   }
 }
 
@@ -139,8 +139,8 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
-  background: rgba(215, 147, 50, 0.06);
-  border: 1px solid rgba(215, 147, 50, 0.2);
+  background: rgba(201, 47, 47, 0.06);
+  border: 1px solid var(--bw-border);
   font-size: 0.85rem;
   color: var(--color-parchment-dim);
 }
@@ -151,9 +151,9 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 }
 
 .replaceBtn {
-  background: var(--color-ember);
-  border: none;
-  color: #000;
+  background: var(--bw-fill);
+  border: 1px solid var(--bw-border-strong);
+  color: var(--bw-text);
   cursor: pointer;
   font-size: 0.75rem;
   padding: 4px 10px;
@@ -165,7 +165,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 
 .cancelConfirmBtn {
   background: none;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--bw-border-strong);
   color: var(--color-parchment-dim);
   cursor: pointer;
   font-size: 0.75rem;

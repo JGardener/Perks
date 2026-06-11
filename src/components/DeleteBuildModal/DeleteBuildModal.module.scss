@@ -5,12 +5,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
+  z-index: var(--z-modal-top);
 }
 
 .modal {
-  background: var(--color-surface, #1a1a1a);
-  border: 1px solid var(--color-ember);
+  background: var(--bw-surface-raised);
+  border: 1px solid var(--bw-border-strong);
+  box-shadow: var(--glow-modal);
   padding: 2rem;
   width: min(90vw, 360px);
   display: flex;
@@ -40,7 +41,7 @@
 
 .cancelBtn {
   background: none;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--bw-border-strong);
   color: var(--color-parchment-dim);
   padding: 0.4rem 1rem;
   cursor: pointer;
@@ -52,9 +53,9 @@
 }
 
 .confirmBtn {
-  background: var(--color-blood, #8b1a1a);
-  border: none;
-  color: var(--color-parchment, #e8d5b7);
+  background: var(--bw-fill);
+  border: 1px solid var(--bw-accent);
+  color: var(--bw-text);
   padding: 0.4rem 1rem;
   cursor: pointer;
   font-size: 0.85rem;

@@ -18,7 +18,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: var(--z-modal);
   backdrop-filter: blur(2px);
 }
 
@@ -26,8 +26,8 @@
   position: relative;
   background: var(--color-ash);
   border: 1px solid var(--color-ember-dim);
-  border-radius: 8px;
-  box-shadow: 0 0 40px rgba(232, 151, 58, 0.15);
+  border-radius: var(--radius-0);
+  box-shadow: var(--glow-modal);
   padding: 36px 40px 40px;
   width: 360px;
   max-width: calc(100vw - 32px);
@@ -126,7 +126,7 @@
 .error {
   font-family: var(--font-label);
   font-size: 0.8rem;
-  color: var(--color-blood);
+  color: var(--bw-accent-bright);
   margin: 0;
 }
 
@@ -183,10 +183,10 @@
 }
 
 .submit {
-  background: var(--color-ember);
-  border: none;
-  border-radius: 4px;
-  color: var(--color-void);
+  background: var(--bw-fill);
+  border: 1px solid var(--bw-border-strong);
+  border-radius: var(--radius-1);
+  color: var(--bw-text);
   cursor: pointer;
   font-family: var(--font-heading);
   font-size: 0.7rem;
@@ -198,7 +198,7 @@
   transition: background 0.15s ease;
 
   &:hover:not(:disabled) {
-    background: #d4873a;
+    background: var(--bw-fill-hover);
   }
 
   &:disabled {

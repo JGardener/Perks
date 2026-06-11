@@ -41,9 +41,9 @@
     }
 
     &--active {
-      border-color: var(--color-ember);
-      background: var(--color-ember);
-      color: var(--color-void);
+      border-color: var(--bw-accent);
+      background: var(--bw-fill);
+      color: var(--bw-text);
     }
   }
 

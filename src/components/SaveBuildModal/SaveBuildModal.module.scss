@@ -5,13 +5,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
+  z-index: var(--z-modal-top);
 }
 
 .modal {
   position: relative;
-  background: var(--color-surface, #1a1a1a);
-  border: 1px solid var(--color-ember);
+  background: var(--bw-surface-raised);
+  border: 1px solid var(--bw-border-strong);
+  box-shadow: var(--glow-modal);
   padding: 2rem;
   width: min(90vw, 400px);
   display: flex;
@@ -60,17 +61,12 @@
 
 .input {
   padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: var(--color-parchment-dim);
+  background: var(--bw-bg);
+  border: 1px solid var(--bw-border-strong);
+  color: var(--bw-text);
   font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
-
-  &:focus {
-    outline: 2px solid var(--color-ember);
-    outline-offset: 2px;
-  }
 }
 
 .form {
@@ -81,9 +77,9 @@
 
 .saveBtn {
   padding: 0.5rem 1.25rem;
-  background: var(--color-ember);
-  border: none;
-  color: #000;
+  background: var(--bw-fill);
+  border: 1px solid var(--bw-border-strong);
+  color: var(--bw-text);
   font-family: "Oswald", sans-serif;
   font-size: 0.95rem;
   letter-spacing: 0.05em;

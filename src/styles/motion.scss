@@ -1,0 +1,69 @@
+// Ambient + entrance keyframes. transform/opacity only — GPU-cheap.
+// The global prefers-reduced-motion kill-switch in global.scss
+// neutralises every animation defined here.
+
+// Slow fog drift for huge blurred gradient layers.
+@keyframes fog-drift {
+  from {
+    transform: translate3d(-4%, -2%, 0);
+  }
+  to {
+    transform: translate3d(4%, 3%, 0);
+  }
+}
+
+// Breathing glow for the primary CTA — the web is alive.
+@keyframes breath-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(201, 47, 47, 0.3), 0 0 30px rgba(201, 47, 47, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(201, 47, 47, 0.55), 0 0 50px rgba(201, 47, 47, 0.22);
+  }
+}
+
+// Node pulse for bloodweb backdrop nodes.
+@keyframes node-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// Randomise reveal — a three-step flicker, like a node igniting.
+@keyframes flicker-in {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.9;
+  }
+  45% {
+    opacity: 0.3;
+  }
+  70% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// Staggered grid entrance.
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
