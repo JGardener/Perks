@@ -1,9 +1,18 @@
+@use "../../styles/mixins" as *;
+
 .landing {
+  position: relative;
   min-height: 100vh;
+  overflow: hidden;
+}
+
+.content {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--space-6) var(--space-5);
+  min-height: 100vh;
+  padding: var(--space-5);
 }
 
 .auth {
@@ -32,7 +41,8 @@
 
 .hero {
   text-align: center;
-  margin: var(--space-7) 0 var(--space-8);
+  margin: var(--space-7) 0 var(--space-7);
+  animation: rise-in var(--motion-slow) var(--ease-out) both;
 }
 
 .title {
@@ -43,14 +53,14 @@
   text-transform: uppercase;
   color: var(--bw-accent-bright);
   text-shadow: 0 0 30px rgba(201, 47, 47, 0.4);
-  margin: 0 0 var(--space-2);
+  margin: 0 0 var(--space-3);
 }
 
 .subtitle {
   font-family: var(--font-label);
   font-size: var(--text-sm);
   font-weight: 300;
-  letter-spacing: 8px;
+  letter-spacing: 5px;
   text-transform: uppercase;
   color: var(--bw-text-dim);
   margin: 0;
@@ -58,37 +68,123 @@
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(2, minmax(220px, 320px));
+  grid-template-columns: repeat(2, minmax(240px, 340px));
   gap: var(--space-4);
+  width: 100%;
+  max-width: 720px;
+  margin-bottom: var(--space-7);
 }
 
 .card {
+  @include cut-panel(12px);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 120px;
-  padding: var(--space-5);
-  background: var(--bw-surface);
-  border: 1px solid var(--bw-border-strong);
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  min-height: 170px;
   color: var(--bw-text);
+  text-align: center;
+  text-decoration: none;
+  transition: box-shadow var(--motion-base) ease, transform var(--motion-base) var(--ease-out);
+  animation: rise-in var(--motion-slow) var(--ease-out) both;
+  animation-delay: calc(80ms + var(--i) * 70ms);
+
+  &::before,
+  &::after {
+    transition: background var(--motion-fast) ease;
+  }
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: var(--glow-accent);
+    transform: translateY(-3px);
+
+    &::before {
+      background: var(--bw-accent);
+    }
+
+    &::after {
+      background: var(--bw-surface-raised);
+    }
+  }
+
+  &--primary {
+    &::before {
+      background: var(--bw-accent-deep);
+    }
+
+    // The single ambient CTA: a slow breathing glow marks the way in.
+    // (Killed by the global reduced-motion switch.)
+    &:not(:hover):not(:focus-visible) {
+      animation: rise-in var(--motion-slow) var(--ease-out) both,
+        breath-glow 5s ease-in-out 1.2s infinite;
+    }
+
+    .cardTitle {
+      color: var(--bw-accent-bright);
+    }
+  }
+}
+
+.cardTitle {
   font-family: var(--font-heading);
   font-size: var(--text-base);
   font-weight: 600;
   letter-spacing: 3px;
   text-transform: uppercase;
-  text-align: center;
-  text-decoration: none;
-  transition: border-color var(--motion-fast) ease, box-shadow var(--motion-base) ease;
+  margin: 0;
+}
 
-  &:hover {
-    border-color: var(--bw-accent);
-    box-shadow: var(--glow-accent);
+.cardHint {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--bw-text-dim);
+  margin: 0;
+}
+
+.glyph {
+  width: 44px;
+  height: 44px;
+
+  path,
+  line {
+    fill: none;
+    stroke: var(--bw-accent);
+    stroke-width: 4;
   }
 }
 
+.glyphDot {
+  fill: var(--bw-accent);
+  stroke: none;
+}
+
+.glyphSolid {
+  fill: var(--bw-accent-deep);
+  stroke: none !important;
+}
+
 @media (max-width: 640px) {
+  .content {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .hero {
+    margin: var(--space-6) 0;
+  }
+
   .cards {
     grid-template-columns: 1fr;
-    width: 100%;
+    max-width: 420px;
+  }
+
+  .card {
+    min-height: 120px;
+    padding: var(--space-4);
   }
 }

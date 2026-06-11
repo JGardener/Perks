@@ -32,3 +32,36 @@
   background: var(--bw-surface);
   border: 1px solid var(--bw-border);
 }
+
+// Bordered cut-corner panel. clip-path clips borders and box-shadows,
+// so the visible panel is built from two clipped pseudo-layers:
+// ::before paints the "border" (full polygon), ::after the surface
+// (inset 1px). Glows stay on the unclipped host element. Re-colour the
+// border on hover via `&:hover::before { background: ...; }` and keep
+// the host's own background transparent. Content needs position:
+// relative (or z-index) to sit above the layers.
+@mixin cut-panel($cut: 12px) {
+  position: relative;
+  background: transparent;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    @include cut-corners($cut);
+    background: var(--bw-border-strong);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    @include cut-corners(calc(#{$cut} - 0.5px));
+    background: var(--bw-surface);
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
