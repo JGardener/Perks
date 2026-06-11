@@ -70,11 +70,8 @@ afterEach(() => {
 
 describe("BuildMaker — URL sync through the router", () => {
   it("hydrates from share-URL params and writes slot changes back to the URL", () => {
-    let search = "";
-    const LocationProbe = () => {
-      search = useLocation().search;
-      return null;
-    };
+    // Renders the live router search string so assertions stay pure.
+    const LocationProbe = () => <div data-testid="location-search">{useLocation().search}</div>;
     render(
       <MemoryRouter initialEntries={["/build?role=survivor&p0=Adrenaline&p1=&p2=&p3="]}>
         <BuildMaker {...defaultProps} />
@@ -87,6 +84,7 @@ describe("BuildMaker — URL sync through the router", () => {
 
     // Removing the perk syncs the URL (BuildMaker is the single writer)
     fireEvent.click(screen.getByRole("button", { name: /remove adrenaline/i }));
+    const search = screen.getByTestId("location-search").textContent ?? "";
     expect(search).toContain("role=survivor");
     expect(search).not.toContain("Adrenaline");
   });

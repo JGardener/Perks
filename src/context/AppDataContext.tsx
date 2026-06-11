@@ -75,6 +75,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- provider + hook pairing matches ToastContext
 export function useAppData(): AppDataValue {
   const ctx = useContext(AppDataContext);
   if (!ctx) throw new Error("useAppData must be used within AppDataProvider");

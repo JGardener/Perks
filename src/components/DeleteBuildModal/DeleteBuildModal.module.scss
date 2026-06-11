@@ -22,13 +22,13 @@
 .title {
   font-family: "Cinzel", serif;
   font-size: 1.1rem;
-  color: var(--color-ember);
+  color: var(--bw-accent-bright);
   margin: 0;
 }
 
 .body {
   font-size: 0.85rem;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   margin: 0;
 }
 
@@ -42,13 +42,13 @@
 .cancelBtn {
   background: none;
   border: 1px solid var(--bw-border-strong);
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   padding: 0.4rem 1rem;
   cursor: pointer;
   font-size: 0.85rem;
 
   &:hover {
-    border-color: var(--color-parchment-dim);
+    border-color: var(--bw-text-dim);
   }
 }
 

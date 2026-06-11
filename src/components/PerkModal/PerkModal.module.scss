@@ -13,8 +13,8 @@
 
 .modal {
   position: relative;
-  background: var(--color-ash);
-  border: 1px solid var(--color-ember-dim);
+  background: var(--bw-surface);
+  border: 1px solid var(--bw-border-strong);
   border-radius: var(--radius-0);
   box-shadow: var(--glow-modal);
   padding: 36px 40px 40px;
@@ -30,14 +30,14 @@
   right: 16px;
   background: none;
   border: none;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   cursor: pointer;
   font-size: 0.85rem;
   padding: 4px;
   transition: color 0.15s ease;
 
   &:hover {
-    color: var(--color-ember);
+    color: var(--bw-accent-bright);
   }
 }
 
@@ -52,7 +52,7 @@
   flex-shrink: 0;
   width: 100px;
   height: 100px;
-  background: var(--category-color, var(--color-ember));
+  background: var(--category-color, var(--bw-accent-bright));
   clip-path: polygon(
     30% 0%,
     70% 0%,
@@ -93,7 +93,7 @@
   font-weight: 600;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--color-ember);
+  color: var(--bw-accent-bright);
   margin: 0 0 6px;
 }
 
@@ -117,7 +117,7 @@
 
   // DBD descriptions use coloured spans for highlighted token values
   :global(span) {
-    color: var(--color-ember);
+    color: var(--bw-accent-bright);
     font-weight: 400;
   }
 }
@@ -211,16 +211,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--color-ember-dim);
+  border: 1px solid var(--bw-border-strong);
   border-radius: 4px;
   background: transparent;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   cursor: pointer;
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 
   &:hover {
-    border-color: var(--color-ember);
-    color: var(--color-ember);
+    border-color: var(--bw-accent-bright);
+    color: var(--bw-accent-bright);
   }
 
   &--active {

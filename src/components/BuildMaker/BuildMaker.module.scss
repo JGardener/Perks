@@ -50,7 +50,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 }
 
 .emptyPanel {
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   font-size: 0.9rem;
   font-style: italic;
   opacity: 0.5;
@@ -99,11 +99,11 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
     }
 
     &[data-filled="true"] {
-      background: var(--color-ember);
+      background: var(--bw-accent-bright);
       cursor: pointer;
 
       &:hover {
-        background: var(--color-blood);
+        background: var(--bw-accent-deep);
       }
     }
 
@@ -121,7 +121,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   }
 
   &__plus {
-    color: var(--color-ember-dim);
+    color: var(--bw-border-strong);
     font-size: 1.8rem;
     line-height: 1;
     user-select: none;
@@ -132,7 +132,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
     font-size: 0.65rem;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: var(--color-parchment-dim);
+    color: var(--bw-text-dim);
     text-align: center;
     width: 100%;
     overflow: hidden;
@@ -143,9 +143,9 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   &__pinBtn {
     @include touch-target;
     background: none;
-    border: 1px solid var(--color-ember-dim);
+    border: 1px solid var(--bw-border-strong);
     border-radius: 3px;
-    color: var(--color-parchment-dim);
+    color: var(--bw-text-dim);
     cursor: pointer;
     font-family: var(--font-heading);
     font-size: 0.55rem;
@@ -156,13 +156,13 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
     width: 100%;
 
     &:hover:not(:disabled) {
-      border-color: var(--color-ember);
-      color: var(--color-ember);
+      border-color: var(--bw-accent-bright);
+      color: var(--bw-accent-bright);
     }
 
     &--pinned {
-      border-color: var(--color-ember);
-      color: var(--color-ember);
+      border-color: var(--bw-accent-bright);
+      color: var(--bw-accent-bright);
     }
 
     &:disabled {
@@ -175,7 +175,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 // ── Build summary ─────────────────────────────────────────────────────────────
 
 .summary {
-  border: 1px solid var(--color-ember-dim);
+  border: 1px solid var(--bw-border-strong);
   border-radius: 6px;
   overflow: hidden;
 
@@ -184,7 +184,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
     gap: 16px;
     align-items: flex-start;
     padding: 16px 20px;
-    border-bottom: 1px solid var(--color-ember-dim);
+    border-bottom: 1px solid var(--bw-border-strong);
 
     &:last-child {
       border-bottom: none;
@@ -195,7 +195,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
     flex-shrink: 0;
     width: 48px;
     height: 48px;
-    background: var(--color-ember);
+    background: var(--bw-accent-bright);
     clip-path: $octagon;
     padding: 3px;
   }
@@ -218,7 +218,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
     font-weight: 600;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: var(--color-ember);
+    color: var(--bw-accent-bright);
     margin: 0 0 6px;
   }
 
@@ -231,7 +231,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
     margin: 0;
 
     :global(span) {
-      color: var(--color-ember);
+      color: var(--bw-accent-bright);
       font-weight: 400;
     }
   }
@@ -279,9 +279,9 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 
 .clearBtn {
   background: none;
-  border: 1px solid var(--color-ember-dim);
+  border: 1px solid var(--bw-border-strong);
   border-radius: 4px;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   cursor: pointer;
   font-family: var(--font-heading);
   font-size: 0.65rem;
@@ -310,8 +310,8 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 
 .searchInput {
   width: 100%;
-  background: var(--color-ash);
-  border: 1px solid var(--color-ember-dim);
+  background: var(--bw-surface);
+  border: 1px solid var(--bw-border-strong);
   border-radius: 4px;
   color: var(--primary-text-color);
   font-family: var(--font-label);
@@ -322,11 +322,11 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   transition: border-color 0.15s ease;
 
   &:focus {
-    border-color: var(--color-ember);
+    border-color: var(--bw-accent-bright);
   }
 
   &::placeholder {
-    color: var(--color-parchment-dim);
+    color: var(--bw-text-dim);
     opacity: 0.6;
   }
 
@@ -377,17 +377,17 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
     height: 64px;
     clip-path: $octagon;
     padding: 3px;
-    background: var(--color-ember-dim);
+    background: var(--bw-border-strong);
     transition: background 0.15s ease;
 
     &[data-active="true"] {
-      background: var(--color-ember);
+      background: var(--bw-accent-bright);
       box-shadow: 0 0 10px rgba(201, 47, 47, 0.45);
     }
   }
 
   &:hover:not(:disabled) &__octa {
-    background: var(--color-ember);
+    background: var(--bw-accent-bright);
   }
 
   &__img {
@@ -402,7 +402,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
     font-size: 0.6rem;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: var(--color-parchment-dim);
+    color: var(--bw-text-dim);
     text-align: center;
     width: 100%;
     overflow: hidden;
@@ -410,7 +410,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
     white-space: nowrap;
 
     .pickerItem--active & {
-      color: var(--color-ember);
+      color: var(--bw-accent-bright);
     }
   }
 }
@@ -424,7 +424,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   right: 0;
   background: none;
   border: none;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   font-size: 0.85rem;
   line-height: 1;
   cursor: pointer;

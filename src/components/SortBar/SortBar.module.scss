@@ -28,16 +28,16 @@
     letter-spacing: 1px;
     text-transform: uppercase;
     padding: 6px 14px;
-    border: 1px solid var(--color-ember-dim);
+    border: 1px solid var(--bw-border-strong);
     border-radius: 4px;
     background: transparent;
-    color: var(--color-parchment-dim);
+    color: var(--bw-text-dim);
     cursor: pointer;
     transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 
     &:hover {
-      border-color: var(--color-ember);
-      color: var(--color-ember);
+      border-color: var(--bw-accent-bright);
+      color: var(--bw-accent-bright);
     }
 
     &--active {
@@ -55,16 +55,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--color-ember-dim);
+    border: 1px solid var(--bw-border-strong);
     border-radius: 4px;
     background: transparent;
-    color: var(--color-parchment-dim);
+    color: var(--bw-text-dim);
     cursor: pointer;
     transition: border-color 0.15s ease, color 0.15s ease;
 
     &:hover {
-      border-color: var(--color-ember);
-      color: var(--color-ember);
+      border-color: var(--bw-accent-bright);
+      color: var(--bw-accent-bright);
     }
   }
 }

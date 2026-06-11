@@ -23,7 +23,7 @@
 .title {
   font-family: "Cinzel", serif;
   font-size: 1.1rem;
-  color: var(--color-ember);
+  color: var(--bw-accent-bright);
   margin: 0;
   padding-right: 2rem;
 }
@@ -34,19 +34,19 @@
   right: 0.75rem;
   background: none;
   border: none;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   font-size: 1.1rem;
   cursor: pointer;
   line-height: 1;
   padding: 0.25rem;
 
   &:hover {
-    color: var(--color-ember);
+    color: var(--bw-accent-bright);
   }
 }
 
 .warning {
-  color: var(--color-ember);
+  color: var(--bw-accent-bright);
   font-size: 0.85rem;
   margin: 0;
 }
@@ -56,7 +56,7 @@
   flex-direction: column;
   gap: 0.4rem;
   font-size: 0.85rem;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
 }
 
 .input {

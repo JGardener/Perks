@@ -9,21 +9,21 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 .heading {
   font-family: "Cinzel", serif;
   font-size: 1rem;
-  color: var(--color-ember);
+  color: var(--bw-accent-bright);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin: 0 0 20px;
 }
 
 .prompt {
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   font-size: 0.9rem;
 }
 
 .promptLink {
   background: none;
   border: none;
-  color: var(--color-ember);
+  color: var(--bw-accent-bright);
   cursor: pointer;
   font-size: inherit;
   padding: 0;
@@ -35,7 +35,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 }
 
 .emptyState {
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   font-size: 0.9rem;
   font-style: italic;
 }
@@ -62,7 +62,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 .cardName {
   font-family: "Cinzel", serif;
   font-size: 0.85rem;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   min-width: 120px;
   flex-shrink: 0;
 }
@@ -77,7 +77,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   width: 36px;
   height: 36px;
   clip-path: $octagon;
-  background: var(--color-ember);
+  background: var(--bw-accent-bright);
   padding: 2px;
   flex-shrink: 0;
 }
@@ -102,7 +102,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 
 .loadBtn {
   background: none;
-  border: 1px solid var(--color-ember-dim);
+  border: 1px solid var(--bw-border-strong);
   color: var(--bw-accent-bright);
   cursor: pointer;
   font-family: var(--font-heading);
@@ -112,7 +112,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   text-transform: uppercase;
 
   &:hover {
-    border-color: var(--color-ember);
+    border-color: var(--bw-accent-bright);
   }
 }
 
@@ -142,7 +142,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   background: rgba(201, 47, 47, 0.06);
   border: 1px solid var(--bw-border);
   font-size: 0.85rem;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
 }
 
 .confirmMsg {
@@ -166,12 +166,12 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 .cancelConfirmBtn {
   background: none;
   border: 1px solid var(--bw-border-strong);
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   cursor: pointer;
   font-size: 0.75rem;
   padding: 4px 10px;
 
   &:hover {
-    border-color: var(--color-parchment-dim);
+    border-color: var(--bw-text-dim);
   }
 }

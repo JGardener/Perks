@@ -1,6 +1,14 @@
 # UI Critique — The Bloodweb
 *Generated 2026-05-19*
 
+> **Addendum 2026-06-11 — Bloodweb redesign:** the issues below were addressed by the
+> ground-up redesign (see DESIGN.md + ADR-0008): P1 filter chrome (search + collapsed
+> filters), P1 zero-result empty state, P2 hidden description scroll ("Full details"
+> affordance), P2 editorial layout (landing hub, randomiser hero, community tier board,
+> palette break from amber-on-black), P3 spring easing (now ease-out), plus heuristic 1/6
+> rated-count surfacing and heuristic 7 perks-page search. Re-run `/impeccable critique`
+> against the new UI for a fresh score.
+
 ---
 
 ## Design Health Score

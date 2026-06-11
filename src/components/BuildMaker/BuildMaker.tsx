@@ -66,7 +66,7 @@ const FlyingPerk = ({ perk, fromRect, toRect, onLand }: FlyingPerkProps) => {
         width: fromRect.width,
         height: fromRect.height,
         clipPath: OCTAGON,
-        background: "var(--color-ember)",
+        background: "var(--bw-accent-bright)",
         padding: "3px",
         pointerEvents: "none",
         zIndex: 120, // --z-flight in variables.scss (inline styles can't read tokens)
