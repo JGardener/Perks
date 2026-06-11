@@ -14,7 +14,7 @@
   font-weight: 300;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   padding-top: 6px;
   flex-shrink: 0;
 }
@@ -45,7 +45,7 @@
 
   &--active {
     background: var(--cat-color);
-    color: var(--color-void);
+    color: var(--bw-bg);
 
     &:hover {
       background: color-mix(in srgb, var(--cat-color) 80%, transparent);
@@ -61,14 +61,14 @@
   text-transform: uppercase;
   padding: 4px 10px;
   border-radius: 4px;
-  border: 1px solid var(--color-parchment-dim);
+  border: 1px solid var(--bw-text-dim);
   background: transparent;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   cursor: pointer;
   transition: border-color 0.15s ease, color 0.15s ease;
 
   &:hover {
-    border-color: var(--color-parchment);
-    color: var(--color-parchment);
+    border-color: var(--bw-text);
+    color: var(--bw-text);
   }
 }

@@ -1,26 +1,75 @@
 :root {
-  // Core palette — pulled from DBD's in-game UI feel
-  --color-void: #0a0a0a;          // The Entity's realm: near-black
-  --color-ash: #111111;           // Card backgrounds
-  --color-ember: #e8973a;         // Amber — DBD's primary perk UI colour
-  --color-ember-dim: #6b4318;     // Dimmed ember for subtle borders
-  --color-blood: #8b1a1a;         // Deep red — danger, blood
-  --color-parchment: #d4c5a9;     // Aged paper — primary text
-  --color-parchment-dim: #a8957e; // Muted parchment — secondary text
+  // ── Bloodweb palette ─────────────────────────────────────────────
+  // The web, not the campfire: clotted blacks, arterial red, bone.
+  --bw-bg: #0b0608;             // clotted black — page ground
+  --bw-surface: #15090c;        // dried-blood ash — cards, panels, modals
+  --bw-surface-raised: #1d0d11; // hover / raised step above surface
+  --bw-accent: #c92f2f;         // arterial red — fills, glows, large text (3.5:1 on bg)
+  --bw-accent-bright: #e25555;  // small red text + focus ring (≥4.5:1 on bg)
+  --bw-accent-deep: #7a1f1f;    // deep vein — web strokes, decorative only
+  --bw-text: #e8e3d8;           // bone — primary text (~15:1)
+  --bw-text-dim: #9a8f85;       // ash grey — secondary text (~6:1 on bg)
+  --bw-border: #3a181c;         // decorative hairlines only
+  --bw-border-strong: #6e3a3f;  // interactive component boundaries (≥3:1)
+  --bw-fill: var(--bw-accent-deep); // solid button/active fill — pair with --bw-text (≈8:1)
+  --bw-fill-hover: #9c2828;     // hover step for --bw-fill (bone text ≈6:1)
 
-  // Semantic aliases
-  --page-background: var(--color-void);
-  --card-background: var(--color-ash);
-  --card-border: var(--color-ember-dim);
-  --primary-text-color: var(--color-parchment);
-  --secondary-text-color: var(--color-parchment-dim);
-  --accent-color: var(--color-ember);
+  // ── Semantic aliases ─────────────────────────────────────────────
+  --page-background: var(--bw-bg);
+  --card-background: var(--bw-surface);
+  --card-border: var(--bw-border-strong);
+  --primary-text-color: var(--bw-text);
+  --secondary-text-color: var(--bw-text-dim);
+  --accent-color: var(--bw-accent);
+  --focus-ring-color: var(--bw-accent-bright);
 
-  // Glows
-  --glow-ember: 0 0 10px rgba(232, 151, 58, 0.35), 0 0 30px rgba(232, 151, 58, 0.1);
-  --glow-ember-hover: 0 0 18px rgba(232, 151, 58, 0.6), 0 0 50px rgba(232, 151, 58, 0.2);
+  // ── Spacing scale ────────────────────────────────────────────────
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
 
-  // Fonts
+  // ── Type scale (root stays 17px) ─────────────────────────────────
+  --text-xs: 0.7rem;
+  --text-sm: 0.8rem;
+  --text-md: 0.9rem;
+  --text-base: 1rem;
+  --text-lg: 1.15rem;
+  --text-xl: 1.4rem;
+  --text-2xl: 1.8rem;
+  --text-display: clamp(2.2rem, 6vw, 4rem);
+
+  // ── Z-index scale ────────────────────────────────────────────────
+  --z-nav: 40;
+  --z-drawer-overlay: 90;
+  --z-drawer: 91;
+  --z-modal-overlay: 100;
+  --z-modal: 101;
+  --z-modal-top: 110; // Save/Delete modals stack above PerkModal
+  --z-flight: 120;    // FLIP flying perk
+  --z-toast: 130;
+
+  // ── Motion ───────────────────────────────────────────────────────
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 400ms;
+  --motion-ambient: 75s;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  // ── Radius: sharp by design ──────────────────────────────────────
+  --radius-0: 0;
+  --radius-1: 2px;
+
+  // ── Glows (always red — heat from the web) ───────────────────────
+  --glow-accent: 0 0 10px rgba(201, 47, 47, 0.35), 0 0 30px rgba(201, 47, 47, 0.12);
+  --glow-accent-hover: 0 0 18px rgba(201, 47, 47, 0.55), 0 0 50px rgba(201, 47, 47, 0.2);
+  --glow-modal: 0 0 40px rgba(201, 47, 47, 0.15);
+
+  // ── Fonts ────────────────────────────────────────────────────────
   --font-heading: "Cinzel", serif;
   --font-label: "Oswald", sans-serif;
 }

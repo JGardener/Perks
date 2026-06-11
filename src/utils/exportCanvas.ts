@@ -2,12 +2,15 @@ import type { Grade, Perk } from "../types/dbd";
 import { GRADE_COLORS, GRADE_ORDER } from "./gradeColors";
 import { getPerkImageUrl } from "./perkUtils";
 
-const BG = "#0a0a0a";
-const CARD_BG = "#111111";
-const EMBER = "#e8973a";
-const PARCHMENT_DIM = "#a8957e";
-const SLOT_EMPTY_BG = "#1c1c1c";
-const SLOT_EMPTY_PLUS = "#6b4318";
+// Mirrors the Bloodweb palette in src/styles/variables.scss —
+// canvas can't read CSS custom properties, so keep these in sync.
+const BG = "#0b0608";
+const CARD_BG = "#15090c";
+const ACCENT = "#c92f2f";
+const TEXT_DIM = "#9a8f85";
+const SLOT_EMPTY_BG = "#1d0d11";
+const SLOT_EMPTY_PLUS = "#6e3a3f";
+const SEPARATOR = "#3a181c";
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve) => {
@@ -85,7 +88,7 @@ export async function exportBuildImage(
   ctx.fillRect(0, 0, W, H);
 
   // Role label
-  ctx.fillStyle = EMBER;
+  ctx.fillStyle = ACCENT;
   ctx.font = `600 11px "Cinzel", serif`;
   ctx.letterSpacing = "2px";
   ctx.fillText(`${role.toUpperCase()} BUILD`, PAD, 32);
@@ -98,14 +101,14 @@ export async function exportBuildImage(
     if (perk && img) {
       // Clip to rounded rect and draw image
       ctx.save();
-      roundRect(ctx, x, ICON_Y, ICON, ICON, 6);
+      roundRect(ctx, x, ICON_Y, ICON, ICON, 2);
       ctx.clip();
       ctx.drawImage(img, x, ICON_Y, ICON, ICON);
       ctx.restore();
     } else {
       // Empty slot
       ctx.fillStyle = SLOT_EMPTY_BG;
-      roundRect(ctx, x, ICON_Y, ICON, ICON, 6);
+      roundRect(ctx, x, ICON_Y, ICON, ICON, 2);
       ctx.fill();
       ctx.fillStyle = SLOT_EMPTY_PLUS;
       ctx.font = `300 32px "Oswald", sans-serif`;
@@ -119,7 +122,7 @@ export async function exportBuildImage(
     // Perk name
     const name = perk?.name ?? "";
     if (name) {
-      ctx.fillStyle = PARCHMENT_DIM;
+      ctx.fillStyle = TEXT_DIM;
       ctx.font = `400 10px "Oswald", sans-serif`;
       ctx.textAlign = "center";
       // Truncate name to fit under icon
@@ -205,7 +208,7 @@ export async function exportTierListImage(
   ctx.fillRect(0, 0, W, totalH);
 
   // Header
-  ctx.fillStyle = EMBER;
+  ctx.fillStyle = ACCENT;
   ctx.font = `600 18px "Cinzel", serif`;
   ctx.letterSpacing = "3px";
   ctx.textBaseline = "middle";
@@ -214,7 +217,7 @@ export async function exportTierListImage(
   ctx.textBaseline = "alphabetic";
 
   // Separator line under header
-  ctx.strokeStyle = "#2a1f10";
+  ctx.strokeStyle = SEPARATOR;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(PAD, HEADER_H - 4);
@@ -255,18 +258,18 @@ export async function exportTierListImage(
 
       if (img) {
         ctx.save();
-        roundRect(ctx, ix, iy, ICON, ICON, 5);
+        roundRect(ctx, ix, iy, ICON, ICON, 2);
         ctx.clip();
         ctx.drawImage(img, ix, iy, ICON, ICON);
         ctx.restore();
       } else {
         ctx.fillStyle = SLOT_EMPTY_BG;
-        roundRect(ctx, ix, iy, ICON, ICON, 5);
+        roundRect(ctx, ix, iy, ICON, ICON, 2);
         ctx.fill();
       }
 
       // Perk name
-      ctx.fillStyle = PARCHMENT_DIM;
+      ctx.fillStyle = TEXT_DIM;
       ctx.font = `400 9px "Oswald", sans-serif`;
       ctx.textAlign = "center";
       let display = perk.name;

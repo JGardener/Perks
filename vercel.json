@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://dbd.tricky.lol/api/:path*"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
     }
   ]
 }

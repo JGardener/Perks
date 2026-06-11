@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Perk } from "../../types/dbd";
 import { useToast } from "../../hooks/useToast";
@@ -40,8 +41,17 @@ const defaultProps = {
   onDelete: vi.fn().mockResolvedValue(undefined),
 };
 
-function preloadUrl(perkName: string) {
-  window.history.pushState({}, "", `?role=survivor&p0=${encodeURIComponent(perkName)}&p1=&p2=&p3=`);
+// BuildMaker reads/writes the URL via react-router; tests mount it in a
+// MemoryRouter. `withPerk` pre-populates slot 0 through the share-URL params.
+function renderBuildMaker(props = defaultProps, withPerk?: string) {
+  const url = withPerk
+    ? `/build?role=survivor&p0=${encodeURIComponent(withPerk)}&p1=&p2=&p3=`
+    : "/build";
+  return render(
+    <MemoryRouter initialEntries={[url]}>
+      <BuildMaker {...props} />
+    </MemoryRouter>,
+  );
 }
 
 beforeEach(() => {
@@ -54,35 +64,56 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  window.history.pushState({}, "", "/");
   localStorage.clear();
   vi.clearAllMocks();
 });
 
+describe("BuildMaker — URL sync through the router", () => {
+  it("hydrates from share-URL params and writes slot changes back to the URL", () => {
+    // Renders the live router search string so assertions stay pure.
+    const LocationProbe = () => <div data-testid="location-search">{useLocation().search}</div>;
+    render(
+      <MemoryRouter initialEntries={["/build?role=survivor&p0=Adrenaline&p1=&p2=&p3="]}>
+        <BuildMaker {...defaultProps} />
+        <LocationProbe />
+      </MemoryRouter>,
+    );
+
+    // Hydrated from URL
+    expect(screen.getByRole("button", { name: /remove adrenaline/i })).not.toBeNull();
+
+    // Removing the perk syncs the URL (BuildMaker is the single writer)
+    fireEvent.click(screen.getByRole("button", { name: /remove adrenaline/i }));
+    const search = screen.getByTestId("location-search").textContent ?? "";
+    expect(search).toContain("role=survivor");
+    expect(search).not.toContain("Adrenaline");
+  });
+});
+
 describe("BuildMaker — ConstraintsDrawer integration", () => {
   it("renders the Constraints toggle button", () => {
-    render(<BuildMaker {...defaultProps} />);
+    renderBuildMaker();
     expect(screen.getByRole("button", { name: /constraints/i })).not.toBeNull();
   });
 });
 
 describe("BuildMaker — perk blacklist", () => {
   it("each perk in the picker has a ban button", () => {
-    render(<BuildMaker {...defaultProps} />);
+    renderBuildMaker();
     TEST_PERKS.forEach((perk) => {
       expect(screen.getByRole("button", { name: `Exclude ${perk.name} from randomiser` })).not.toBeNull();
     });
   });
 
   it("clicking a ban button shows the activeConstraintCount badge in the Constraints drawer", () => {
-    render(<BuildMaker {...defaultProps} />);
+    renderBuildMaker();
     fireEvent.click(screen.getByRole("button", { name: "Exclude Dead Hard from randomiser" }));
     const toggle = screen.getByRole("button", { name: /constraints/i });
     expect(toggle.textContent).toContain("1");
   });
 
   it("the ban button label changes to 'Remove from blacklist' after banning", () => {
-    render(<BuildMaker {...defaultProps} />);
+    renderBuildMaker();
     fireEvent.click(screen.getByRole("button", { name: "Exclude Dead Hard from randomiser" }));
     expect(screen.getByRole("button", { name: "Remove Dead Hard from blacklist" })).not.toBeNull();
   });
@@ -90,20 +121,19 @@ describe("BuildMaker — perk blacklist", () => {
 
 describe("BuildMaker — pin slots", () => {
   it("renders a Pin button for each slot", () => {
-    render(<BuildMaker {...defaultProps} />);
+    renderBuildMaker();
     expect(screen.getAllByRole("button", { name: "Pin" })).toHaveLength(4);
   });
 
   it("all Pin buttons are disabled when slots are empty", () => {
-    render(<BuildMaker {...defaultProps} />);
+    renderBuildMaker();
     screen.getAllByRole("button", { name: "Pin" }).forEach((btn) => {
       expect((btn as HTMLButtonElement).disabled).toBe(true);
     });
   });
 
   it("Pin button for a filled slot is enabled", () => {
-    preloadUrl("Adrenaline");
-    render(<BuildMaker {...defaultProps} />);
+    renderBuildMaker(defaultProps, "Adrenaline");
 
     // Slot 0 is pre-populated with Adrenaline; slots 1-3 are empty
     const pinButtons = screen.getAllByRole("button", { name: "Pin" });
@@ -112,8 +142,7 @@ describe("BuildMaker — pin slots", () => {
   });
 
   it("clicking Pin changes the button label to 'Pinned'", () => {
-    preloadUrl("Adrenaline");
-    render(<BuildMaker {...defaultProps} />);
+    renderBuildMaker(defaultProps, "Adrenaline");
 
     const pinButtons = screen.getAllByRole("button", { name: "Pin" });
     fireEvent.click(pinButtons[0]);
@@ -124,8 +153,7 @@ describe("BuildMaker — pin slots", () => {
   });
 
   it("clicking Pinned toggles back to Pin (unpin)", () => {
-    preloadUrl("Adrenaline");
-    render(<BuildMaker {...defaultProps} />);
+    renderBuildMaker(defaultProps, "Adrenaline");
 
     const pinBtn = screen.getAllByRole("button", { name: "Pin" })[0];
     fireEvent.click(pinBtn); // pin
@@ -136,8 +164,7 @@ describe("BuildMaker — pin slots", () => {
   });
 
   it("removing a perk from a pinned slot auto-unpins it", () => {
-    preloadUrl("Adrenaline");
-    render(<BuildMaker {...defaultProps} />);
+    renderBuildMaker(defaultProps, "Adrenaline");
 
     // Pin slot 0
     const pinBtn = screen.getAllByRole("button", { name: "Pin" })[0];

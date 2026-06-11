@@ -10,16 +10,16 @@
 .separator {
   width: 1px;
   height: 20px;
-  background: var(--color-ember-dim);
+  background: var(--bw-border-strong);
   align-self: center;
   flex-shrink: 0;
 }
 
 .btn {
   background: none;
-  border: 1px solid var(--color-ember-dim);
+  border: 1px solid var(--bw-border-strong);
   border-radius: 4px;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   cursor: pointer;
   font-family: var(--font-heading);
   font-size: 0.65rem;
@@ -29,8 +29,8 @@
   transition: border-color 0.15s ease, color 0.15s ease;
 
   &:hover:not(:disabled) {
-    border-color: var(--color-ember);
-    color: var(--color-ember);
+    border-color: var(--bw-accent-bright);
+    color: var(--bw-accent-bright);
   }
 
   &:disabled {
@@ -39,8 +39,8 @@
   }
 
   &--confirm {
-    border-color: var(--color-ember);
-    color: var(--color-ember);
+    border-color: var(--bw-accent-bright);
+    color: var(--bw-accent-bright);
   }
 }
 

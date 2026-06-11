@@ -1,3 +1,5 @@
+@use "../../styles/mixins" as *;
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -5,16 +7,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: var(--z-modal);
   backdrop-filter: blur(2px);
 }
 
 .modal {
   position: relative;
-  background: var(--color-ash);
-  border: 1px solid var(--color-ember-dim);
-  border-radius: 8px;
-  box-shadow: 0 0 40px rgba(232, 151, 58, 0.15);
+  background: var(--bw-surface);
+  border: 1px solid var(--bw-border-strong);
+  border-radius: var(--radius-0);
+  box-shadow: var(--glow-modal);
   padding: 36px 40px 40px;
   width: 520px;
   max-width: calc(100vw - 32px);
@@ -28,14 +30,14 @@
   right: 16px;
   background: none;
   border: none;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   cursor: pointer;
   font-size: 0.85rem;
   padding: 4px;
   transition: color 0.15s ease;
 
   &:hover {
-    color: var(--color-ember);
+    color: var(--bw-accent-bright);
   }
 }
 
@@ -50,7 +52,7 @@
   flex-shrink: 0;
   width: 100px;
   height: 100px;
-  background: var(--category-color, var(--color-ember));
+  background: var(--category-color, var(--bw-accent-bright));
   clip-path: polygon(
     30% 0%,
     70% 0%,
@@ -91,7 +93,7 @@
   font-weight: 600;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--color-ember);
+  color: var(--bw-accent-bright);
   margin: 0 0 6px;
 }
 
@@ -115,8 +117,66 @@
 
   // DBD descriptions use coloured spans for highlighted token values
   :global(span) {
-    color: var(--color-ember);
+    color: var(--bw-accent-bright);
     font-weight: 400;
+  }
+}
+
+.community {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--bw-border);
+  background: rgba(201, 47, 47, 0.04);
+}
+
+.communityLabel {
+  font-family: var(--font-label);
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--bw-text-dim);
+}
+
+.communityBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--grade-color);
+  border: 1px solid var(--grade-color);
+  border-radius: var(--radius-1);
+}
+
+.communityVotes {
+  font-family: var(--font-label);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  color: var(--bw-text-dim);
+}
+
+.communityNudge {
+  background: none;
+  border: none;
+  padding: 4px 0;
+  cursor: pointer;
+  font-family: var(--font-label);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  color: var(--bw-text-dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--bw-accent-bright);
   }
 }
 
@@ -141,6 +201,7 @@
 }
 
 .grade {
+  @include touch-target;
   font-family: var(--font-heading);
   font-size: 0.85rem;
   font-weight: 600;
@@ -150,27 +211,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--color-ember-dim);
+  border: 1px solid var(--bw-border-strong);
   border-radius: 4px;
   background: transparent;
-  color: var(--color-parchment-dim);
+  color: var(--bw-text-dim);
   cursor: pointer;
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 
   &:hover {
-    border-color: var(--color-ember);
-    color: var(--color-ember);
+    border-color: var(--bw-accent-bright);
+    color: var(--bw-accent-bright);
   }
 
   &--active {
-    border-color: var(--color-ember);
-    background: var(--color-ember);
-    color: var(--color-void);
+    border-color: var(--bw-accent);
+    background: var(--bw-fill);
+    color: var(--bw-text);
 
     &:hover {
-      background: var(--color-ember-dim);
-      border-color: var(--color-ember-dim);
-      color: var(--color-parchment);
+      background: var(--bw-fill-hover);
+      border-color: var(--bw-accent);
+      color: var(--bw-text);
     }
   }
 }

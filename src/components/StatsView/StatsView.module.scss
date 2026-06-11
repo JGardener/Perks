@@ -19,7 +19,7 @@
   font-weight: 600;
   letter-spacing: 4px;
   text-transform: uppercase;
-  color: var(--color-ember);
+  color: var(--bw-accent-bright);
   margin: 0;
 }
 
@@ -41,10 +41,10 @@
   font-weight: 600;
   letter-spacing: 5px;
   text-transform: uppercase;
-  color: var(--color-ember);
+  color: var(--bw-accent-bright);
   margin: 0 0 4px;
   padding-bottom: 8px;
-  border-bottom: 1px solid var(--color-ember-dim);
+  border-bottom: 1px solid var(--bw-border-strong);
 }
 
 .ratedCount {
@@ -65,21 +65,21 @@
 }
 
 .chart__barBg {
-  fill: var(--color-ash);
+  fill: var(--bw-surface);
 }
 
 .chart__gradeLabel {
   font-family: var(--font-heading);
   font-size: 11px;
   font-weight: 600;
-  fill: var(--color-parchment);
+  fill: var(--bw-text);
   dominant-baseline: middle;
 }
 
 .chart__countLabel {
   font-family: var(--font-label);
   font-size: 10px;
-  fill: var(--color-parchment-dim);
+  fill: var(--bw-text-dim);
   dominant-baseline: middle;
 }
 
@@ -104,7 +104,7 @@
   letter-spacing: 2px;
   background: none;
   border: none;
-  color: var(--color-ember);
+  color: var(--bw-accent-bright);
   cursor: pointer;
   padding: 0;
   text-decoration: underline;
@@ -199,7 +199,7 @@
   width: 32px;
   height: 32px;
   flex-shrink: 0;
-  background: var(--color-ember);
+  background: var(--bw-accent-bright);
   clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
   padding: 2px;
 }

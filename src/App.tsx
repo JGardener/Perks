@@ -1,45 +1,39 @@
-import "./App.css";
 import "./styles/global.scss";
 
 import { useCallback, useState } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthModal } from "./components/AuthModal/AuthModal";
-import { PerkList } from "./components/PerkList/PerkList";
+import { AppShell } from "./components/AppShell/AppShell";
+import { AppDataProvider } from "./context/AppDataContext";
 import { AuthModalContext } from "./context/AuthModalContext";
-import { useAuth } from "./hooks/useAuth";
+import { BuildPage } from "./pages/BuildPage/BuildPage";
+import { CommunityPage } from "./pages/CommunityPage/CommunityPage";
+import { LandingPage } from "./pages/LandingPage/LandingPage";
+import { PerksPage } from "./pages/PerksPage/PerksPage";
 
 function App() {
-  const { user, loading, signOut } = useAuth();
   const [authReason, setAuthReason] = useState<string | undefined>(undefined);
   const openAuthModal = useCallback((reason?: string) => setAuthReason(reason ?? ""), []);
 
   return (
-    <AuthModalContext.Provider value={{ openAuthModal }}>
-      <header className="app-header" aria-label="The Bloodweb">
-        <div className="app-header__left" />
-        <div className="app-header__center">
-          <h1 className="app-header__title">The Bloodweb</h1>
-          <p className="app-header__subtitle">Dead by Daylight</p>
-        </div>
-        <div className="app-header__auth">
-          {!loading && (user ? (
-            <>
-              <span className="app-header__user">{user.email}</span>
-              <button className="app-header__auth-btn" onClick={() => signOut()}>
-                Sign Out
-              </button>
-            </>
-          ) : (
-            <button className="app-header__auth-btn" onClick={() => openAuthModal()}>
-              Sign In
-            </button>
-          ))}
-        </div>
-      </header>
-      <PerkList />
-      {authReason !== undefined && (
-        <AuthModal reason={authReason} onClose={() => setAuthReason(undefined)} />
-      )}
-    </AuthModalContext.Provider>
+    <BrowserRouter>
+      <AppDataProvider>
+        <AuthModalContext.Provider value={{ openAuthModal }}>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route element={<AppShell />}>
+              <Route path="/perks" element={<PerksPage />} />
+              <Route path="/build" element={<BuildPage />} />
+              <Route path="/community" element={<CommunityPage />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          {authReason !== undefined && (
+            <AuthModal reason={authReason} onClose={() => setAuthReason(undefined)} />
+          )}
+        </AuthModalContext.Provider>
+      </AppDataProvider>
+    </BrowserRouter>
   );
 }
 

@@ -1,0 +1,55 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+
+  &--dim {
+    opacity: 0.5;
+  }
+}
+
+.web {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  line,
+  polygon {
+    fill: none;
+    stroke: var(--bw-accent-deep);
+    stroke-width: 1;
+    opacity: 0.22;
+  }
+}
+
+.node {
+  fill: var(--bw-accent);
+  opacity: 0.25;
+  animation: node-pulse 7s ease-in-out infinite;
+}
+
+// Two huge soft red fog banks drifting very slowly. Blur is static;
+// only transform animates — cheap even on weak GPUs.
+.fog {
+  position: absolute;
+  width: 90vmax;
+  height: 90vmax;
+  top: -30%;
+  left: -20%;
+  background: radial-gradient(closest-side, rgba(122, 31, 31, 0.09), transparent 70%);
+  filter: blur(60px);
+  will-change: transform;
+  animation: fog-drift var(--motion-ambient) ease-in-out infinite alternate;
+
+  &--second {
+    top: auto;
+    left: auto;
+    bottom: -40%;
+    right: -25%;
+    background: radial-gradient(closest-side, rgba(122, 31, 31, 0.06), transparent 70%);
+    animation-duration: calc(var(--motion-ambient) * 1.35);
+    animation-direction: alternate-reverse;
+  }
+}

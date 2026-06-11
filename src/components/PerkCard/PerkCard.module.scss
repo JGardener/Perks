@@ -1,12 +1,15 @@
+@use "../../styles/mixins" as *;
+
 .perkCard {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   gap: 16px;
   padding: 16px;
+  height: 100%;
   background-color: var(--card-background);
   border: 1px solid var(--card-border);
-  border-radius: 6px;
+  border-radius: var(--radius-0);
   color: var(--primary-text-color);
   transition:
     box-shadow 0.25s ease,
@@ -15,11 +18,11 @@
   cursor: pointer;
 
   // Faint ember glow at rest — the candle is always flickering
-  box-shadow: var(--glow-ember);
+  box-shadow: var(--glow-accent);
 
   &:hover {
-    border-color: var(--color-ember);
-    box-shadow: var(--glow-ember-hover);
+    border-color: var(--bw-accent-bright);
+    box-shadow: var(--glow-accent-hover);
     transform: translateY(-3px);
   }
 
@@ -30,7 +33,7 @@
     height: 80px;
 
     // Octagon border colour: category colour when available, amber fallback
-    background: var(--category-color, var(--color-ember));
+    background: var(--category-color, var(--bw-accent-bright));
     clip-path: polygon(
       30% 0%,
       70% 0%,
@@ -72,7 +75,7 @@
     font-weight: 600;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: var(--color-ember);
+    color: var(--bw-accent-bright);
     margin: 0 0 2px;
   }
 
@@ -84,6 +87,29 @@
     text-transform: uppercase;
     color: var(--secondary-text-color);
     margin: 0 0 10px;
+  }
+
+  // The description is clamped — give the hidden content a visible way
+  // out (the card itself also opens the modal, but that's not obvious).
+  &__more {
+    background: none;
+    border: none;
+    padding: 4px 0;
+    margin-top: 2px;
+    cursor: pointer;
+    font-family: var(--font-label);
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--bw-text-dim);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--bw-accent-bright);
+    }
   }
 
   &__rater {
@@ -101,6 +127,7 @@
   }
 
   &__grade {
+    @include touch-target;
     font-family: var(--font-heading);
     font-size: 0.75rem;
     font-weight: 600;
@@ -110,27 +137,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--color-ember-dim);
+    border: 1px solid var(--bw-border-strong);
     border-radius: 4px;
     background: transparent;
-    color: var(--color-parchment-dim);
+    color: var(--bw-text-dim);
     cursor: pointer;
     transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 
     &:hover {
-      border-color: var(--color-ember);
-      color: var(--color-ember);
+      border-color: var(--bw-accent-bright);
+      color: var(--bw-accent-bright);
     }
 
     &--active {
-      border-color: var(--color-ember);
-      background: var(--color-ember);
-      color: var(--color-void);
+      border-color: var(--bw-accent);
+      background: var(--bw-fill);
+      color: var(--bw-text);
 
       &:hover {
-        background: var(--color-ember-dim);
-        border-color: var(--color-ember-dim);
-        color: var(--color-parchment);
+        background: var(--bw-fill-hover);
+        border-color: var(--bw-accent);
+        color: var(--bw-text);
       }
     }
   }
@@ -149,7 +176,7 @@
     overflow: hidden;
 
     :global(span) {
-      color: var(--color-ember);
+      color: var(--bw-accent-bright);
       font-weight: 400;
     }
   }

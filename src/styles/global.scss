@@ -1,3 +1,5 @@
+@use "motion";
+
 html {
   // 17px base — scales all rem values up ~6% for improved readability
   font-size: 106.25%;
@@ -15,32 +17,51 @@ body {
   color: var(--primary-text-color);
   font-family: var(--font-label), sans-serif;
 
-  // Subtle atmospheric gradient — dark fog from above and below
+  // Atmospheric ground — blood-dark fog from above, cold void below
   background-image:
-    radial-gradient(ellipse at top, #1c0e06 0%, transparent 55%),
-    radial-gradient(ellipse at bottom, #06080a 0%, transparent 60%);
+    radial-gradient(ellipse at top, #1a070b 0%, transparent 55%),
+    radial-gradient(ellipse at bottom, #08060a 0%, transparent 60%);
   background-attachment: fixed;
 }
 
+// Single visible focus style for every interactive element (WCAG 2.4.7)
+:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: 2px;
+}
+
+// Global reduced-motion kill-switch — neutralises every CSS animation
+// and transition in one place. WAAPI calls need their own guards.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .keyword {
-  color: var(--color-ember);
+  color: var(--bw-accent-bright);
   font-style: italic;
 }
 
 kbd {
   display: inline-block;
   padding: 0.1em 0.35em;
-  border: 1px solid #555;
-  border-radius: 3px;
+  border: 1px solid var(--bw-border-strong);
+  border-radius: var(--radius-1);
   font-size: 0.85em;
-  background: #2a2a2a;
-  color: var(--color-parchment-dim);
+  background: var(--bw-surface-raised);
+  color: var(--bw-text-dim);
 }
 
 // Firefox
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-ember) transparent;
+  scrollbar-color: var(--bw-accent-deep) transparent;
 }
 
 // Webkit (Chrome, Brave, Edge, Safari)
@@ -54,10 +75,10 @@ kbd {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-ember);
+  background: var(--bw-accent-deep);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-parchment-dim);
+  background: var(--bw-accent);
 }
