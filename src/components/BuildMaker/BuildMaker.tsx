@@ -460,7 +460,7 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
               const dimmed = !active && (isFull || banned);
 
               return (
-                <div key={perk.name} style={{ position: "relative" }}>
+                <div key={perk.name} className={styles.pickerCell}>
                   <button
                     className={`${styles["pickerItem"]} ${active ? styles["pickerItem--active"] : ""} ${dimmed ? styles["pickerItem--dimmed"] : ""}`}
                     onClick={(e) => handlePickerClick(perk, e.currentTarget)}

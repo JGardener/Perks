@@ -347,7 +347,15 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   align-content: start;
 }
 
+.pickerCell {
+  position: relative;
+  min-width: 0;
+}
+
 .pickerItem {
+  // Buttons shrink-wrap even as flex containers — fill the grid cell so
+  // octagons centre consistently and the name span can ellipsize.
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
