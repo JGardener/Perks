@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ConstraintsActions, ConstraintsDerived, ConstraintsState, FilterState } from "../../hooks/useConstraints";
 import styles from "./ConstraintsDrawer.module.scss";
 
@@ -59,6 +59,23 @@ interface Props {
 
 export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
   const [open, setOpen] = useState(false);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+
+  // Escape closes the drawer; focus moves in on open and back on close.
+  useEffect(() => {
+    if (!open) return;
+    closeBtnRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
   const { buildSize, blacklist, categoryFilters, characterFilters } = state;
   const { setBuildSize, toggleBlacklist, toggleCategory, toggleCharacter, resetConstraints } = actions;
   const { activeConstraintCount, pinnedCount, availableCategories, availableCharacterKeys, getCharacterLabel } = derived;
@@ -67,6 +84,7 @@ export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
     <div className={styles.drawer}>
       <div className={styles.toggleRow}>
         <button
+          ref={toggleRef}
           className={styles.toggle}
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
@@ -89,12 +107,18 @@ export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
       <div
         className={`${styles.panel} ${open ? styles["panel--open"] : ""}`}
         aria-hidden={!open}
+        role="dialog"
+        aria-label="Randomiser constraints"
       >
         <div className={styles.panelHeader}>
           <span className={styles.panelTitle}>Constraints</span>
           <button
+            ref={closeBtnRef}
             className={styles.closeBtn}
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              toggleRef.current?.focus();
+            }}
             aria-label="Close constraints panel"
             tabIndex={open ? 0 : -1}
           >

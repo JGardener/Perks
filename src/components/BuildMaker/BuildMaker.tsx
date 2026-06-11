@@ -7,11 +7,11 @@ import { decodeBuild, encodeBuild } from "../../utils/buildShare";
 import { buildToSlots } from "../../utils/buildToSlots";
 import { exportBuildImage } from "../../utils/exportCanvas";
 import { getPerkImageUrl, resolveDescription } from "../../utils/perkUtils";
-import { ConstraintsDrawer } from "../ConstraintsDrawer/ConstraintsDrawer";
 import { SaveBuildModal } from "../SaveBuildModal/SaveBuildModal";
 import { SavedBuilds } from "../SavedBuilds/SavedBuilds";
 import styles from "./BuildMaker.module.scss";
 import { ExportToolbar } from "./ExportToolbar";
+import { RandomiserHero } from "./RandomiserHero";
 
 const OCTAGON = "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)";
 
@@ -117,6 +117,8 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
   const [search, setSearch] = useState("");
   const [flight, setFlight] = useState<Flight | null>(null);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [revealTick, setRevealTick] = useState(0);
+  const [announcement, setAnnouncement] = useState("");
 
   const [constraints, constraintActions, constraintDerived] = useConstraints(
     perks, slots, setSlots, characterMap, role
@@ -236,20 +238,37 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
       return next;
     });
 
+    // WAAPI ignores the CSS reduced-motion kill-switch — guard manually.
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const slotEl = slotRefs.current[flight.targetIdx];
-    if (slotEl) {
+    if (slotEl && !reducedMotion) {
       slotEl.animate(
         [
-          { transform: "scale(0.7)", opacity: 0.6 },
-          { transform: "scale(1.12)" },
-          { transform: "scale(1)" },
+          { transform: "scale(0.85)", opacity: 0.6 },
+          { transform: "scale(1)", opacity: 1 },
         ],
-        { duration: 300, easing: "cubic-bezier(0.34, 1.56, 0.64, 1)" },
+        { duration: 250, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
       );
     }
 
     setFlight(null);
   };
+
+  // Randomise with a staggered flicker reveal on the slots; announce
+  // the result for screen readers (the visual flicker is silent).
+  const slotsRef = useRef(slots);
+  slotsRef.current = slots;
+
+  const handleRandomise = () => {
+    constraintActions.randomise();
+    setRevealTick((t) => t + 1);
+  };
+
+  useEffect(() => {
+    if (revealTick === 0) return;
+    const names = slotsRef.current.filter(Boolean).map((p) => p!.name);
+    if (names.length) setAnnouncement(`Build randomised: ${names.join(", ")}`);
+  }, [revealTick]);
 
   const handleLoadBuild = (build: Build) => {
     setSlots(buildToSlots(build.perks, perks));
@@ -314,6 +333,19 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
         />
       )}
 
+      {/* Screen-reader announcement for randomise results */}
+      <div className={styles.visuallyHidden} aria-live="polite" aria-atomic="true">
+        {announcement}
+      </div>
+
+      {/* The randomiser leads the page */}
+      <RandomiserHero
+        onRandomise={handleRandomise}
+        constraints={constraints}
+        constraintActions={constraintActions}
+        constraintDerived={constraintDerived}
+      />
+
       {/* Top band: slots + toolbar + actions */}
       <div className={styles.topBand}>
         <div className={styles.buildSlots}>
@@ -321,7 +353,9 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
             <div key={i} className={styles.slot}>
               <div
                 ref={(el) => { slotRefs.current[i] = el; }}
-                className={styles["slot__octa"]}
+                key={`reveal-${revealTick}`}
+                className={`${styles["slot__octa"]} ${revealTick > 0 ? styles["slot__octa--reveal"] : ""}`}
+                style={revealTick > 0 ? { animationDelay: `${i * 60}ms` } : undefined}
                 data-filled={String(!!perk)}
                 onClick={() => perk && removeSlot(i)}
                 role={perk ? "button" : undefined}
@@ -354,53 +388,35 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
           ))}
         </div>
 
-        <ExportToolbar
-          onShareUrl={handleShareUrl}
-          onCopyText={handleCopyText}
-          onDownloadImage={async () => {
-            const ok = await exportBuildImage(slots, role);
-            if (!ok) showToast("Failed to export image");
-          }}
-          buildActive={hasPerks}
-          onExportTierList={hasRatings ? onExportTierList : undefined}
-        />
-
-        <div className={styles.clearRow}>
-          <button className={styles.saveBtn} onClick={handleSaveClick} disabled={!hasPerks}>
-            Save Build
-          </button>
-          <button
-            className={styles.clearBtn}
-            onClick={() => {
-              [...constraints.pinnedSlots].forEach((i) => {
-                if (slots[i]) constraintActions.togglePin(i);
-              });
-              setSlots([null, null, null, null]);
+        <div className={styles.actionsRow}>
+          <div className={styles.clearRow}>
+            <button className={styles.saveBtn} onClick={handleSaveClick} disabled={!hasPerks}>
+              Save Build
+            </button>
+            <button
+              className={styles.clearBtn}
+              onClick={() => {
+                [...constraints.pinnedSlots].forEach((i) => {
+                  if (slots[i]) constraintActions.togglePin(i);
+                });
+                setSlots([null, null, null, null]);
+              }}
+              disabled={!hasPerks}
+            >
+              Clear Build
+            </button>
+          </div>
+          <ExportToolbar
+            onShareUrl={handleShareUrl}
+            onCopyText={handleCopyText}
+            onDownloadImage={async () => {
+              const ok = await exportBuildImage(slots, role);
+              if (!ok) showToast("Failed to export image");
             }}
-            disabled={!hasPerks}
-          >
-            Clear Build
-          </button>
+            buildActive={hasPerks}
+            onExportTierList={hasRatings ? onExportTierList : undefined}
+          />
         </div>
-      </div>
-
-      {/* Hero Randomise button + Constraints trigger */}
-      <div className={styles.randomiseRow}>
-        <button
-          className={styles.randomiseBtn}
-          onClick={constraintActions.randomise}
-          disabled={!constraintDerived.canRandomise}
-        >
-          Randomise Build
-          <span className={`${styles.randomisePool} ${constraintDerived.constraintError ? styles["randomisePool--warn"] : ""}`}>
-            {constraintDerived.constraintError ?? `${constraintDerived.eligibleCount} perk${constraintDerived.eligibleCount !== 1 ? "s" : ""} eligible`}
-          </span>
-        </button>
-        <ConstraintsDrawer
-          state={constraints}
-          actions={constraintActions}
-          derived={constraintDerived}
-        />
       </div>
 
       {/* Middle band: descriptions (left) + picker (right) */}
@@ -490,17 +506,18 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
         </div>
       </div>
 
-      <SavedBuilds
-        builds={builds}
-        role={role}
-        perks={perks}
-        userId={userId}
-        onOpenAuthModal={onOpenAuthModal}
-        isCurrentBuildEmpty={slots.every((s) => s === null)}
-        onLoad={handleLoadBuild}
-        onDelete={onDelete}
-      />
-
+      <div id="saved">
+        <SavedBuilds
+          builds={builds}
+          role={role}
+          perks={perks}
+          userId={userId}
+          onOpenAuthModal={onOpenAuthModal}
+          isCurrentBuildEmpty={slots.every((s) => s === null)}
+          onLoad={handleLoadBuild}
+          onDelete={onDelete}
+        />
+      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { BuildMaker } from "../../components/BuildMaker/BuildMaker";
 import { ErrorBoundary } from "../../components/ErrorBoundary/ErrorBoundary";
 import { RoleToggle } from "../../components/RoleToggle/RoleToggle";
@@ -34,6 +34,13 @@ export const BuildPage = () => {
   // second URL writer would fight it. Initial value comes from the URL.
   const [searchParams] = useSearchParams();
   const [role, setRole] = useState<Role>(searchParams.get("role") === "killer" ? "killer" : "survivor");
+
+  // The landing page's "My Builds" card links to /build#saved.
+  const { hash } = useLocation();
+  useEffect(() => {
+    if (hash !== "#saved" || dataLoading) return;
+    document.getElementById("saved")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [hash, dataLoading]);
 
   if (dataError)
     return (

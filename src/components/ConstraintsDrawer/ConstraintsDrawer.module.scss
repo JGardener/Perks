@@ -1,3 +1,5 @@
+@use "../../styles/mixins" as *;
+
 .drawer {
   display: flex;
   flex-direction: column;
@@ -124,6 +126,7 @@
 }
 
 .closeBtn {
+  @include touch-target;
   background: none;
   border: none;
   color: var(--color-parchment-dim);
@@ -161,6 +164,7 @@
 }
 
 .pill {
+  @include touch-target;
   width: 2rem;
   height: 2rem;
   background: rgba(255, 255, 255, 0.05);
@@ -235,6 +239,7 @@
 }
 
 .chipRemove {
+  @include touch-target;
   background: none;
   border: none;
   color: var(--bw-accent-bright);
@@ -251,6 +256,7 @@
 }
 
 .filterBtn {
+  @include touch-target;
   width: 1.6rem;
   height: 1.6rem;
   background: rgba(255, 255, 255, 0.05);

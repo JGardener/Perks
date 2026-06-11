@@ -1,4 +1,18 @@
+@use "../../styles/mixins" as *;
+
 $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 // ── Outer container ───────────────────────────────────────────────────────────
 
@@ -92,6 +106,11 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
         background: var(--color-blood);
       }
     }
+
+    // Randomise reveal — nodes igniting one by one
+    &--reveal {
+      animation: flicker-in 0.45s var(--ease-out) both;
+    }
   }
 
   &__img {
@@ -122,6 +141,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   }
 
   &__pinBtn {
+    @include touch-target;
     background: none;
     border: 1px solid var(--color-ember-dim);
     border-radius: 3px;
@@ -219,11 +239,19 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 
 // ── Actions ───────────────────────────────────────────────────────────────────
 
+.actionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px 24px;
+  margin-top: 12px;
+}
+
 .clearRow {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 12px;
 }
 
 .saveBtn {
@@ -390,9 +418,10 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
 // ── Ban button (per perk in picker) ──────────────────────────────────────────
 
 .banBtn {
+  @include touch-target;
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: 0;
+  right: 0;
   background: none;
   border: none;
   color: var(--color-parchment-dim);
@@ -414,59 +443,6 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   }
 }
 
-// ── Hero Randomise button ─────────────────────────────────────────────────────
-
-.randomiseRow {
-  display: flex;
-  align-items: stretch;
-  gap: 8px;
-  padding: 0 0 16px;
-}
-
-.randomiseBtn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  background: var(--bw-fill);
-  border: 1px solid var(--bw-accent);
-  border-radius: var(--radius-1);
-  color: var(--bw-text);
-  cursor: pointer;
-  font-family: var(--font-heading);
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  padding: 12px 20px;
-  text-transform: uppercase;
-  transition: filter 0.15s ease, opacity 0.15s ease;
-
-  &:hover:not(:disabled) {
-    filter: brightness(1.12);
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-}
-
-.randomisePool {
-  font-family: var(--font-label);
-  font-size: 0.75rem;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  text-transform: none;
-  color: var(--bw-text);
-  opacity: 0.75;
-
-  &--warn {
-    opacity: 1;
-    font-weight: 500;
-  }
-}
-
 // ── Responsive ────────────────────────────────────────────────────────────────
 
 @media (max-width: 900px) {
@@ -474,6 +450,7 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
     padding: 16px 24px 32px;
   }
 
+  // Stacked: picker (act) above summary (read)
   .middleBand {
     grid-template-columns: 1fr;
     height: auto;
@@ -481,10 +458,12 @@ $octagon: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%
   }
 
   .leftPanel {
+    order: 2;
     height: 260px;
   }
 
   .rightPanel {
+    order: 1;
     height: 420px;
   }
 
