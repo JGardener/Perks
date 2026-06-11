@@ -42,6 +42,13 @@ export const PerkCard = ({ perk, characterName, rating, onRate, onClick }: PerkC
           className={styles["perkCard__description"]}
           dangerouslySetInnerHTML={{ __html: resolveDescription(perk.description, perk.tunables) }}
         />
+        <button
+          className={styles["perkCard__more"]}
+          onClick={onClick}
+          aria-label={`Full details for ${perk.name}`}
+        >
+          Full details
+        </button>
         <div className={styles["perkCard__rater"]} onClick={(e) => e.stopPropagation()}>
           {GRADES.map((grade) => (
             <button

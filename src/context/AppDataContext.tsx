@@ -2,6 +2,8 @@ import { createContext, useContext, useMemo } from "react";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import type { Build, CommunityGrade, Grade, Perk } from "../types/dbd";
+import { buildConsensusMap } from "../utils/communityConsensus";
+import type { ConsensusGrade } from "../utils/communityConsensus";
 import { useAuth } from "../hooks/useAuth";
 import { useBuilds } from "../hooks/useBuilds";
 import { useCharacters } from "../hooks/useCharacters";
@@ -23,6 +25,7 @@ interface AppDataValue {
   saveBuild: (name: string, role: "survivor" | "killer", perks: (string | null)[], isPublic?: boolean) => Promise<void>;
   deleteBuild: (id: string) => Promise<void>;
   communityGrades: CommunityGrade[];
+  consensusMap: Map<string, ConsensusGrade>;
   user: User | null;
   authLoading: boolean;
   signOut: () => void;
@@ -42,6 +45,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
 
   const survivorPerks = useMemo(() => perks.filter((p) => p.role === "survivor"), [perks]);
   const killerPerks = useMemo(() => perks.filter((p) => p.role === "killer"), [perks]);
+  const consensusMap = useMemo(() => buildConsensusMap(communityGrades), [communityGrades]);
 
   const value: AppDataValue = {
     perks,
@@ -62,6 +66,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     },
     deleteBuild,
     communityGrades,
+    consensusMap,
     user,
     authLoading,
     signOut,

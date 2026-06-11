@@ -8,6 +8,7 @@ import type { RatingFilterValue } from "../RatingFilter/RatingFilter";
 import { SortBar } from "../SortBar/SortBar";
 import type { SortDirection, SortField } from "../SortBar/SortBar";
 import { GRADE_ORDER } from "../../utils/gradeColors";
+import { filterPerks } from "../../utils/perkSearch";
 import styles from "./PerkSection.module.scss";
 
 interface PerkSectionProps {
@@ -25,6 +26,7 @@ export const PerkSection = ({ role, perks, characterMap, ratings, onRate }: Perk
   const [activeGrades, setActiveGrades] = useState<Set<RatingFilterValue>>(new Set());
   const [selectedPerk, setSelectedPerk] = useState<Perk | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   const toggleGrade = (value: RatingFilterValue) => {
     setActiveGrades((prev) => {
@@ -53,10 +55,17 @@ export const PerkSection = ({ role, perks, characterMap, ratings, onRate }: Perk
     return [...seen].sort();
   }, [perks]);
 
+  const ratedCount = useMemo(
+    () => perks.reduce((n, p) => (ratings[p.name] ? n + 1 : n), 0),
+    [perks, ratings],
+  );
+
   const sortedPerks = useMemo(() => {
-    let filtered = activeCategories.size === 0
-      ? perks
-      : perks.filter((p) => p.categories?.some((c) => activeCategories.has(c)));
+    let filtered = filterPerks(perks, search, characterMap);
+
+    if (activeCategories.size > 0) {
+      filtered = filtered.filter((p) => p.categories?.some((c) => activeCategories.has(c)));
+    }
 
     if (activeGrades.size > 0) {
       filtered = filtered.filter((p) => {
@@ -87,7 +96,13 @@ export const PerkSection = ({ role, perks, characterMap, ratings, onRate }: Perk
 
       return direction === "asc" ? result : -result;
     });
-  }, [perks, sortBy, direction, characterMap, ratings, activeCategories, activeGrades]);
+  }, [perks, search, sortBy, direction, characterMap, ratings, activeCategories, activeGrades]);
+
+  const clearEverything = () => {
+    setSearch("");
+    setActiveCategories(new Set());
+    setActiveGrades(new Set());
+  };
 
   const selectedCharacterName = selectedPerk?.character != null
     ? (characterMap[selectedPerk.character] ?? null)
@@ -95,6 +110,20 @@ export const PerkSection = ({ role, perks, characterMap, ratings, onRate }: Perk
 
   return (
     <section className={styles.perkSection} aria-label={`${characterLabel} perks`}>
+      <div className={styles.searchRow}>
+        <input
+          className={styles.searchInput}
+          type="search"
+          placeholder={`Search ${characterLabel.toLowerCase()} perks…`}
+          aria-label={`Search ${characterLabel.toLowerCase()} perks`}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <span className={styles.ratedCount}>
+          {ratedCount} / {perks.length} rated
+        </span>
+      </div>
+
       <SortBar
         sortBy={sortBy}
         direction={direction}
@@ -130,21 +159,33 @@ export const PerkSection = ({ role, perks, characterMap, ratings, onRate }: Perk
         </div>
       )}
 
-      <div className={styles.perkList}>
-        {sortedPerks.map((perk) => {
-          const characterName = perk.character !== null ? (characterMap[perk.character] ?? null) : null;
-          return (
-            <PerkCard
-              key={perk.name}
-              perk={perk}
-              characterName={characterName}
-              rating={ratings[perk.name] ?? null}
-              onRate={(grade) => onRate(perk.name, grade)}
-              onClick={() => setSelectedPerk(perk)}
-            />
-          );
-        })}
-      </div>
+      {sortedPerks.length === 0 ? (
+        <div className={styles.emptyState}>
+          <p>No perks match your search and filters.</p>
+          <button onClick={clearEverything}>Clear search & filters</button>
+        </div>
+      ) : (
+        <div className={styles.perkList}>
+          {sortedPerks.map((perk, i) => {
+            const characterName = perk.character !== null ? (characterMap[perk.character] ?? null) : null;
+            return (
+              <div
+                key={perk.name}
+                className={styles.cardEnter}
+                style={{ animationDelay: `${Math.min(i, 12) * 40}ms` }}
+              >
+                <PerkCard
+                  perk={perk}
+                  characterName={characterName}
+                  rating={ratings[perk.name] ?? null}
+                  onRate={(grade) => onRate(perk.name, grade)}
+                  onClick={() => setSelectedPerk(perk)}
+                />
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {selectedPerk && (
         <PerkModal

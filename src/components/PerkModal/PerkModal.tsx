@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 import type { Grade, Perk } from "../../types/dbd";
+import { useAppData } from "../../context/AppDataContext";
 import { useAuthModal } from "../../context/AuthModalContext";
 import { useAuth } from "../../hooks/useAuth";
 import { getCategoryColor } from "../../utils/categoryColors";
+import { GRADE_COLORS } from "../../utils/gradeColors";
 import { getPerkImageUrl, resolveDescription } from "../../utils/perkUtils";
 import styles from "./PerkModal.module.scss";
 
@@ -50,10 +52,12 @@ export const PerkModal = ({ perk, characterName, rating, onRate, onClose }: Perk
 
   const { user } = useAuth();
   const { openAuthModal } = useAuthModal();
+  const { consensusMap } = useAppData();
   const handleGrade = (grade: Grade) =>
     user ? onRate(rating === grade ? null : grade) : openAuthModal("Sign in to rate perks");
   const modalId = "perk-modal-title";
   const categoryColor = getCategoryColor(perk.categories);
+  const consensus = consensusMap.get(perk.name);
 
   return (
     <div
@@ -92,6 +96,34 @@ export const PerkModal = ({ perk, characterName, rating, onRate, onClose }: Perk
           className={styles.description}
           dangerouslySetInnerHTML={{ __html: resolveDescription(perk.description, perk.tunables) }}
         />
+
+        <div className={styles.community}>
+          <span className={styles.communityLabel}>Community</span>
+          {user ? (
+            consensus ? (
+              <>
+                <span
+                  className={styles.communityBadge}
+                  style={{ "--grade-color": GRADE_COLORS[consensus.grade] } as React.CSSProperties}
+                >
+                  {consensus.grade}
+                </span>
+                <span className={styles.communityVotes}>
+                  {consensus.votes.toLocaleString()} vote{consensus.votes === 1 ? "" : "s"}
+                </span>
+              </>
+            ) : (
+              <span className={styles.communityVotes}>No votes yet</span>
+            )
+          ) : (
+            <button
+              className={styles.communityNudge}
+              onClick={() => openAuthModal("Sign in to see the community's grade")}
+            >
+              Sign in to see the community's grade
+            </button>
+          )}
+        </div>
 
         <div className={styles.rater} role="group" aria-label={`Rate ${perk.name}`}>
           {GRADES.map((grade) => (

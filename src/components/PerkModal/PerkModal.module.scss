@@ -1,3 +1,5 @@
+@use "../../styles/mixins" as *;
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -120,6 +122,64 @@
   }
 }
 
+.community {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--bw-border);
+  background: rgba(201, 47, 47, 0.04);
+}
+
+.communityLabel {
+  font-family: var(--font-label);
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--bw-text-dim);
+}
+
+.communityBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--grade-color);
+  border: 1px solid var(--grade-color);
+  border-radius: var(--radius-1);
+}
+
+.communityVotes {
+  font-family: var(--font-label);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  color: var(--bw-text-dim);
+}
+
+.communityNudge {
+  background: none;
+  border: none;
+  padding: 4px 0;
+  cursor: pointer;
+  font-family: var(--font-label);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  color: var(--bw-text-dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--bw-accent-bright);
+  }
+}
+
 .rater {
   display: flex;
   gap: 8px;
@@ -141,6 +201,7 @@
 }
 
 .grade {
+  @include touch-target;
   font-family: var(--font-heading);
   font-size: 0.85rem;
   font-weight: 600;

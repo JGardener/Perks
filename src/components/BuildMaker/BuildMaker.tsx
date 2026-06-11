@@ -6,6 +6,7 @@ import { useToast } from "../../hooks/useToast";
 import { decodeBuild, encodeBuild } from "../../utils/buildShare";
 import { buildToSlots } from "../../utils/buildToSlots";
 import { exportBuildImage } from "../../utils/exportCanvas";
+import { filterPerks } from "../../utils/perkSearch";
 import { getPerkImageUrl, resolveDescription } from "../../utils/perkUtils";
 import { SaveBuildModal } from "../SaveBuildModal/SaveBuildModal";
 import { SavedBuilds } from "../SavedBuilds/SavedBuilds";
@@ -138,19 +139,10 @@ export const BuildMaker = ({ perks, role, characterMap, hasRatings, onExportTier
     setFlight(null);
   }, [role]);
 
-  const filteredPerks = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return perks;
-    return perks.filter((p) => {
-      const description = resolveDescription(p.description, p.tunables).replace(/<[^>]*>/g, " ").toLowerCase();
-      const character = p.character !== null ? (characterMap[p.character] ?? "").toLowerCase() : "";
-      return (
-        p.name.toLowerCase().includes(q) ||
-        character.includes(q) ||
-        description.includes(q)
-      );
-    });
-  }, [perks, search, characterMap]);
+  const filteredPerks = useMemo(
+    () => filterPerks(perks, search, characterMap),
+    [perks, search, characterMap],
+  );
 
   // Include in-flight perk in inBuild so its picker item dims during flight
   const inBuild = useMemo(() => {
