@@ -1,53 +1,111 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { ConstraintsActions, ConstraintsDerived, ConstraintsState, FilterState } from "../../hooks/useConstraints";
 import styles from "./ConstraintsDrawer.module.scss";
 
-function FilterSection({ label, items, filters, getLabel, onToggle }: {
+type SectionMode = "anyone" | "only" | "avoid";
+
+const MODE_LABELS: Record<SectionMode, (noun: string) => string> = {
+  anyone: (noun) => `Pick from all ${noun}`,
+  only: (noun) => `Only use selected ${noun}`,
+  avoid: (noun) => `Avoid selected ${noun}`,
+};
+
+function FilterSection({ label, noun, items, filters, getLabel, onToggle, focusable }: {
   label: string;
+  noun: string; // plural, lowercase — completes the radio sentences ("characters")
   items: string[];
   filters: Record<string, FilterState>;
   getLabel: (key: string) => string;
   onToggle: (key: string, value: FilterState) => void;
+  focusable: boolean;
 }) {
+  const radioGroupName = useId();
+  // Only consulted while every item is neutral; once a filter exists the mode
+  // is derived from the data so storage-loaded state always displays honestly.
+  const [chosenMode, setChosenMode] = useState<SectionMode>("anyone");
+
   if (items.length === 0) return null;
-  const included = items.filter((k) => (filters[k] ?? "neutral") === "include");
+
+  const hasInclude = items.some((k) => filters[k] === "include");
+  const hasExclude = items.some((k) => filters[k] === "exclude");
+  const mode: SectionMode = hasInclude ? "only" : hasExclude ? "avoid" : chosenMode;
+  const activeValue: FilterState = mode === "avoid" ? "exclude" : "include";
+  const selected = items.filter((k) => filters[k] === activeValue);
+
+  const applyMode = (next: SectionMode) => {
+    setChosenMode(next);
+    if (next === "anyone") {
+      // Toggling an item with its current value resets it to neutral.
+      items.forEach((k) => {
+        const v = filters[k] ?? "neutral";
+        if (v !== "neutral") onToggle(k, v);
+      });
+    } else {
+      const from: FilterState = next === "only" ? "exclude" : "include";
+      const to: FilterState = next === "only" ? "include" : "exclude";
+      items.forEach((k) => {
+        if (filters[k] === from) onToggle(k, to);
+      });
+    }
+  };
+
   return (
-    <div className={styles.section}>
-      <span className={styles.sectionLabel}>{label}</span>
-      <span className={styles.filterHint}>+ = only selected · − = skip selected</span>
-      {included.length > 0 && (
-        <span className={styles.filterActive}>Only: {included.map(getLabel).join(", ")}</span>
-      )}
-      <div className={styles.filterGrid}>
-        {items.map((key) => {
-          const displayLabel = getLabel(key);
-          const fs = filters[key] ?? "neutral";
-          return (
-            <div key={key} className={styles.filterRow}>
-              <span className={styles.filterLabel}>{displayLabel}</span>
-              <button
-                className={`${styles.filterBtn} ${fs === "include" ? styles["filterBtn--include"] : ""}`}
-                aria-pressed={fs === "include"}
-                onClick={() => onToggle(key, "include")}
-                aria-label={`Only randomise from ${displayLabel}`}
-                title={`Only: restrict pool to ${displayLabel}`}
-              >
-                +
-              </button>
-              <button
-                className={`${styles.filterBtn} ${fs === "exclude" ? styles["filterBtn--exclude"] : ""}`}
-                aria-pressed={fs === "exclude"}
-                onClick={() => onToggle(key, "exclude")}
-                aria-label={`Exclude ${displayLabel}`}
-                title={`Skip: exclude ${displayLabel} from pool`}
-              >
-                −
-              </button>
-            </div>
-          );
-        })}
+    <fieldset className={styles.sectionFieldset}>
+      <legend className={styles.sectionLabel}>{label}</legend>
+      <div className={styles.sectionBody}>
+        <div className={styles.modeChoices}>
+          {(["anyone", "only", "avoid"] as const).map((m) => (
+            <label
+              key={m}
+              className={`${styles.modeChoice} ${mode === m ? styles["modeChoice--active"] : ""}`}
+            >
+              <input
+                type="radio"
+                name={radioGroupName}
+                checked={mode === m}
+                onChange={() => applyMode(m)}
+                tabIndex={focusable ? 0 : -1}
+              />
+              <span>{MODE_LABELS[m](noun)}</span>
+            </label>
+          ))}
+        </div>
+
+        {mode !== "anyone" && (
+          <p
+            className={`${styles.sectionStatus} ${selected.length === 0 ? styles["sectionStatus--muted"] : ""}`}
+            role="status"
+          >
+            {selected.length === 0
+              ? `Nothing ticked — still picking from all ${noun}.`
+              : `${mode === "only" ? "Only using" : "Avoiding"}: ${selected.map(getLabel).join(", ")}`}
+          </p>
+        )}
+
+        <div
+          className={[
+            styles.choiceGrid,
+            mode === "anyone" ? styles["choiceGrid--disabled"] : "",
+            mode === "avoid" ? styles["choiceGrid--avoid"] : "",
+          ].join(" ")}
+          role="group"
+          aria-label={`${label} selection`}
+        >
+          {items.map((key) => (
+            <label key={key} className={styles.choiceChip}>
+              <input
+                type="checkbox"
+                checked={filters[key] === activeValue}
+                disabled={mode === "anyone"}
+                onChange={() => onToggle(key, activeValue)}
+                tabIndex={focusable ? 0 : -1}
+              />
+              <span className={styles.choiceName}>{getLabel(key)}</span>
+            </label>
+          ))}
+        </div>
       </div>
-    </div>
+    </fieldset>
   );
 }
 
@@ -59,6 +117,8 @@ interface Props {
 
 export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
   const [open, setOpen] = useState(false);
+  // Remounts the filter sections so their mode radios snap back to "Pick from all".
+  const [resetSeq, setResetSeq] = useState(0);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
@@ -78,7 +138,15 @@ export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
 
   const { buildSize, blacklist, categoryFilters, characterFilters } = state;
   const { setBuildSize, toggleBlacklist, toggleCategory, toggleCharacter, resetConstraints } = actions;
-  const { activeConstraintCount, pinnedCount, availableCategories, availableCharacterKeys, getCharacterLabel } = derived;
+  const {
+    activeConstraintCount, pinnedCount, availableCategories, availableCharacterKeys,
+    getCharacterLabel, eligibleCount, constraintError,
+  } = derived;
+
+  const handleReset = () => {
+    resetConstraints();
+    setResetSeq((n) => n + 1);
+  };
 
   return (
     <div className={styles.drawer}>
@@ -96,7 +164,7 @@ export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
           <span className={`${styles.caret} ${open ? styles["caret--open"] : ""}`}>▼</span>
         </button>
         {activeConstraintCount > 0 && (
-          <button className={styles.resetBtn} onClick={resetConstraints}>
+          <button className={styles.resetBtn} onClick={handleReset}>
             Reset
           </button>
         )}
@@ -125,6 +193,13 @@ export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
             ×
           </button>
         </div>
+
+        <p
+          className={`${styles.poolStatus} ${constraintError ? styles["poolStatus--error"] : ""}`}
+          role="status"
+        >
+          {constraintError ?? `${eligibleCount} perk${eligibleCount !== 1 ? "s" : ""} eligible for randomising`}
+        </p>
 
         <div className={styles.section}>
           <span className={styles.sectionLabel}>Build Size</span>
@@ -166,19 +241,25 @@ export const ConstraintsDrawer = ({ state, actions, derived }: Props) => {
         )}
 
         <FilterSection
+          key={`categories-${resetSeq}`}
           label="Categories"
+          noun="categories"
           items={availableCategories}
           filters={categoryFilters}
           getLabel={(k) => k}
           onToggle={toggleCategory}
+          focusable={open}
         />
 
         <FilterSection
+          key={`characters-${resetSeq}`}
           label="Characters"
+          noun="characters"
           items={availableCharacterKeys}
           filters={characterFilters}
           getLabel={getCharacterLabel}
           onToggle={toggleCharacter}
+          focusable={open}
         />
       </div>
     </div>
