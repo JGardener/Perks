@@ -70,14 +70,14 @@ Running all four scripts in order yields approximately **273 of 309** perk icons
 
 ## Tech stack
 
-| Layer | Technology |
-|---|---|
-| UI | React 19 + TypeScript strict mode |
-| Build | Vite 8, SCSS Modules |
-| Backend | Supabase (auth, Postgres, Edge Functions, RLS) |
-| Error monitoring | Sentry (`@sentry/react`) |
-| Testing | Vitest + @testing-library/react + jsdom |
-| Fonts / theme | Cinzel + Oswald, DBD ember-amber palette |
+| Layer            | Technology                                     |
+| ---------------- | ---------------------------------------------- |
+| UI framework     | React 19, functional components only           |
+| Build            | Vite 8, SCSS Modules                           |
+| Backend          | Supabase (auth, Postgres, Edge Functions, RLS) |
+| Error monitoring | Sentry (`@sentry/react`)                       |
+| Testing          | Vitest + @testing-library/react + jsdom        |
+| Fonts / theme    | Cinzel + Oswald, DBD ember-amber palette       |
 
 ## Data source
 

@@ -4,21 +4,21 @@
 
 **Sources**: `vite.config.ts`, `src/App.tsx`, `src/services/dbdApi.ts`, `src/services/supabase.ts`, `src/context/AuthModalContext.tsx`, `src/context/ToastContext.tsx`
 
-**Last updated**: 2026-06-05
+**Last updated**: 2026-06-14
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| UI framework | React 18, functional components only |
-| Language | TypeScript (strict mode) |
-| Build tool | Vite |
-| Styling | SCSS modules + global SCSS |
-| Backend | Supabase (Postgres + Auth + Edge Functions) |
+| Layer            | Technology                                           |
+| ---------------- | ---------------------------------------------------- |
+| UI framework     | React 18, functional components only                 |
+| Language         | TypeScript (strict mode)                             |
+| Build tool       | Vite                                                 |
+| Styling          | SCSS modules + global SCSS                           |
+| Backend          | Supabase (Postgres + Auth + Edge Functions)          |
 | Error monitoring | Sentry (via `@sentry/react` + `@sentry/vite-plugin`) |
-| External data | `dbd.tricky.lol` REST API (free, no auth) |
+| External data    | `dbd.tricky.lol` REST API (free, no auth)            |
 
 ## Data Flow
 
@@ -57,10 +57,10 @@ Defined in `vite.config.ts`. Two proxy rules route requests so the browser never
 
 ## Context Providers
 
-| Context | File | Purpose |
-|---------|------|---------|
-| `AuthModalContext` | `src/context/AuthModalContext.tsx` | Exposes `openAuthModal(reason?)` to any component without prop-drilling |
-| `ToastContext` | `src/context/ToastContext.tsx` | Global toast notification queue; `showToast(message, type?)` auto-dismisses after 4 s |
+| Context            | File                               | Purpose                                                                               |
+| ------------------ | ---------------------------------- | ------------------------------------------------------------------------------------- |
+| `AuthModalContext` | `src/context/AuthModalContext.tsx` | Exposes `openAuthModal(reason?)` to any component without prop-drilling               |
+| `ToastContext`     | `src/context/ToastContext.tsx`     | Global toast notification queue; `showToast(message, type?)` auto-dismisses after 4 s |
 
 ## Sentry
 
