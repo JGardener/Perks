@@ -6,11 +6,17 @@ export default defineConfig({
   build: { sourcemap: "hidden" },
   plugins: [
     react(),
-    sentryVitePlugin({
-      org: process.env.SENTRY_ORG,
-      project: process.env.SENTRY_PROJECT,
-      authToken: process.env.SENTRY_AUTH_TOKEN,
-    }),
+    // Source-map upload needs a Sentry auth token. Only register the plugin
+    // when one is present so local and CI builds work without secrets.
+    ...(process.env.SENTRY_AUTH_TOKEN
+      ? [
+          sentryVitePlugin({
+            org: process.env.SENTRY_ORG,
+            project: process.env.SENTRY_PROJECT,
+            authToken: process.env.SENTRY_AUTH_TOKEN,
+          }),
+        ]
+      : []),
   ],
   server: {
     proxy: {

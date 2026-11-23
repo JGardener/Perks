@@ -22,11 +22,16 @@ export const useRatings = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Clear ratings when the user changes (incl. sign-out) during render rather
+  // than in the load effect, so another user's grades never flash on screen.
+  const [prevUserId, setPrevUserId] = useState(userId);
+  if (userId !== prevUserId) {
+    setPrevUserId(userId);
+    setRatings({});
+  }
+
   useEffect(() => {
-    if (!userId) {
-      setRatings({});
-      return;
-    }
+    if (!userId) return;
 
     const load = async () => {
       const { data, error } = await supabase

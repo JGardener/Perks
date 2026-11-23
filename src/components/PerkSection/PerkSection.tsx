@@ -10,6 +10,7 @@ import type { SortDirection, SortField } from "../SortBar/SortBar";
 import { GRADE_ORDER } from "../../utils/gradeColors";
 import { filterPerks } from "../../utils/perkSearch";
 import styles from "./PerkSection.module.scss";
+import { toggleInSet } from "../../utils/setUtils";
 
 interface PerkSectionProps {
   role: "survivor" | "killer";
@@ -29,19 +30,11 @@ export const PerkSection = ({ role, perks, characterMap, ratings, onRate }: Perk
   const [search, setSearch] = useState("");
 
   const toggleGrade = (value: RatingFilterValue) => {
-    setActiveGrades((prev) => {
-      const next = new Set(prev);
-      next.has(value) ? next.delete(value) : next.add(value);
-      return next;
-    });
+    setActiveGrades((prev) => toggleInSet(prev, value));
   };
 
   const toggleCategory = (cat: PerkCategory) => {
-    setActiveCategories((prev) => {
-      const next = new Set(prev);
-      next.has(cat) ? next.delete(cat) : next.add(cat);
-      return next;
-    });
+    setActiveCategories((prev) => toggleInSet(prev, cat));
   };
 
   const characterLabel = role === "killer" ? "Killer" : "Survivor";

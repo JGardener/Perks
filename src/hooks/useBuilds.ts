@@ -7,20 +7,24 @@ import { useToast } from "./useToast";
 export const useBuilds = (userId: string | null) => {
   const { showToast } = useToast();
   const [builds, setBuilds] = useState<Build[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(userId !== null);
   const [error, setError] = useState<string | null>(null);
 
+  // Reset when the signed-in user changes (incl. sign-out) by adjusting state
+  // during render, not in an effect — React discards this render and re-runs
+  // immediately, so no frame ever shows the previous user's builds.
+  const [prevUserId, setPrevUserId] = useState(userId);
+  if (userId !== prevUserId) {
+    setPrevUserId(userId);
+    setBuilds([]);
+    setLoading(userId !== null);
+    setError(null);
+  }
+
   useEffect(() => {
-    if (!userId) {
-      setBuilds([]);
-      setLoading(false);
-      setError(null);
-      return;
-    }
+    if (!userId) return;
 
     let cancelled = false;
-    setLoading(true);
-    setError(null);
 
     supabase
       .from("builds")
@@ -85,7 +89,7 @@ export const useBuilds = (userId: string | null) => {
       setBuilds((prev) => [build, ...prev]);
       return build;
     },
-    [userId],
+    [userId, showToast],
   );
 
   const deleteBuild = useCallback(
@@ -105,7 +109,7 @@ export const useBuilds = (userId: string | null) => {
 
       setBuilds((prev) => prev.filter((b) => b.id !== id));
     },
-    [userId],
+    [userId, showToast],
   );
 
   return { builds, loading, error, saveBuild, deleteBuild };

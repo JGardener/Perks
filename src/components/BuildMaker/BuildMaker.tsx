@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import type { Build, Perk } from "../../types/dbd";
 import { useConstraints } from "../../hooks/useConstraints";
@@ -27,8 +27,9 @@ interface FlyingPerkProps {
 
 const FlyingPerk = ({ perk, fromRect, toRect, onLand }: FlyingPerkProps) => {
   const ref = useRef<HTMLDivElement>(null);
-  const onLandRef = useRef(onLand);
-  onLandRef.current = onLand;
+  // Effect Event: the animation's finish callback always sees the latest
+  // onLand without restarting the animation when the parent re-renders.
+  const handleLand = useEffectEvent(onLand);
 
   useEffect(() => {
     const el = ref.current;
@@ -52,7 +53,7 @@ const FlyingPerk = ({ perk, fromRect, toRect, onLand }: FlyingPerkProps) => {
       },
     );
 
-    anim.onfinish = () => onLandRef.current();
+    anim.onfinish = () => handleLand();
     return () => anim.cancel();
   }, [fromRect, toRect]);
 

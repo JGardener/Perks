@@ -1,5 +1,9 @@
 # The Bloodweb — Dead by Daylight
 
+[![CI](https://github.com/JGardener/Perks/actions/workflows/ci.yml/badge.svg)](https://github.com/JGardener/Perks/actions/workflows/ci.yml)
+
+**[Live demo → jgardener-the-bloodweb.vercel.app](https://jgardener-the-bloodweb.vercel.app)**
+
 A React + TypeScript + Vite web app for rating Dead by Daylight perks A–F and crafting builds.
 
 ## Features
