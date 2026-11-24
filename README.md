@@ -1,5 +1,9 @@
 # The Bloodweb — Dead by Daylight
 
+[![CI](https://github.com/JGardener/Perks/actions/workflows/ci.yml/badge.svg)](https://github.com/JGardener/Perks/actions/workflows/ci.yml)
+
+**[Live demo → jgardener-the-bloodweb.vercel.app](https://jgardener-the-bloodweb.vercel.app)**
+
 A React + TypeScript + Vite web app for rating Dead by Daylight perks A–F and crafting builds.
 
 ## Features
@@ -70,14 +74,14 @@ Running all four scripts in order yields approximately **273 of 309** perk icons
 
 ## Tech stack
 
-| Layer | Technology |
-|---|---|
-| UI | React 19 + TypeScript strict mode |
-| Build | Vite 8, SCSS Modules |
-| Backend | Supabase (auth, Postgres, Edge Functions, RLS) |
-| Error monitoring | Sentry (`@sentry/react`) |
-| Testing | Vitest + @testing-library/react + jsdom |
-| Fonts / theme | Cinzel + Oswald, DBD ember-amber palette |
+| Layer            | Technology                                     |
+| ---------------- | ---------------------------------------------- |
+| UI framework     | React 19, functional components only           |
+| Build            | Vite 8, SCSS Modules                           |
+| Backend          | Supabase (auth, Postgres, Edge Functions, RLS) |
+| Error monitoring | Sentry (`@sentry/react`)                       |
+| Testing          | Vitest + @testing-library/react + jsdom        |
+| Fonts / theme    | Cinzel + Oswald, DBD ember-amber palette       |
 
 ## Data source
 

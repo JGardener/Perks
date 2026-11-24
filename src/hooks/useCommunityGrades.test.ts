@@ -39,4 +39,31 @@ describe("useCommunityGrades", () => {
     expect(showToast).toHaveBeenCalledWith("Community grades unavailable", "info");
     expect(result.current.error).toBeNull();
   });
+
+  it("clears grades when the user signs out", async () => {
+    mockRpc.mockResolvedValueOnce({ data: [{ perk_name: "Adrenaline", grade: "A", count: 3 }], error: null, count: null, status: 200, statusText: "OK" } as never);
+
+    const { result, rerender } = renderHook(({ id }) => useCommunityGrades(id), {
+      initialProps: { id: "user-123" as string | null },
+    });
+
+    await waitFor(() => expect(result.current.grades).toHaveLength(1));
+
+    rerender({ id: null });
+
+    expect(result.current.grades).toEqual([]);
+    expect(result.current.loading).toBe(false);
+  });
+
+  it("does not refetch when showToast changes identity between renders", async () => {
+    mockUseToast.mockImplementation(() => ({ showToast: vi.fn() }));
+    mockRpc.mockResolvedValue({ data: [], error: null, count: null, status: 200, statusText: "OK" } as never);
+
+    const { result, rerender } = renderHook(() => useCommunityGrades("user-123"));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    rerender();
+
+    expect(mockRpc).toHaveBeenCalledTimes(1);
+  });
 });

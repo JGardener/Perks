@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import type { Perk } from "../types/dbd";
+import { toggleInSet } from "../utils/setUtils";
 
 export type FilterState = "include" | "exclude" | "neutral";
 
@@ -108,19 +109,11 @@ export function useConstraints(
 
   const togglePin = (idx: number) => {
     if (!slots[idx]) return;
-    setPinnedSlots((prev) => {
-      const next = new Set(prev);
-      next.has(idx) ? next.delete(idx) : next.add(idx);
-      return next;
-    });
+    setPinnedSlots((prev) => toggleInSet(prev, idx));
   };
 
   const toggleBlacklist = (name: string) => {
-    setBlacklist((prev) => {
-      const next = new Set(prev);
-      next.has(name) ? next.delete(name) : next.add(name);
-      return next;
-    });
+    setBlacklist((prev) => toggleInSet(prev, name));
   };
 
   const setBuildSize = (n: number) => setBuildSizeState(n);

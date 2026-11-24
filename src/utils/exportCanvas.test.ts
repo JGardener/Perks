@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { exportBuildImage, exportTierListImage } from "./exportCanvas";
 import type { Grade, Perk } from "../types/dbd";
 
+// Partial stub of the 2D context: only the members exportCanvas touches.
+// Cast through `unknown` at the spy since it isn't a full CanvasRenderingContext2D.
 let mockCtx: Record<string, unknown>;
 
 beforeEach(() => {
@@ -71,7 +73,7 @@ describe("exportBuildImage", () => {
   });
 
   it("returns true on a successful render", async () => {
-    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(mockCtx as any);
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(mockCtx as unknown as CanvasRenderingContext2D);
 
     const result = await exportBuildImage([null, null, null, null], "survivor");
 
@@ -93,7 +95,7 @@ describe("exportTierListImage", () => {
   });
 
   it("returns true on a successful render", async () => {
-    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(mockCtx as any);
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(mockCtx as unknown as CanvasRenderingContext2D);
 
     const result = await exportTierListImage(
       [minimalPerk],

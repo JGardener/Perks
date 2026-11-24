@@ -55,6 +55,10 @@ function renderDrawer(
   );
 }
 
+function openDrawer() {
+  fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+}
+
 describe("ConstraintsDrawer", () => {
   it("toggle button is always visible with text 'Constraints'", () => {
     renderDrawer();
@@ -71,7 +75,7 @@ describe("ConstraintsDrawer", () => {
 
   it("clicking the toggle opens the drawer (Build Size section appears)", () => {
     renderDrawer();
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    openDrawer();
     expect(screen.getByRole("button", { name: "1" })).not.toBeNull();
     expect(screen.getByRole("button", { name: "2" })).not.toBeNull();
     expect(screen.getByRole("button", { name: "3" })).not.toBeNull();
@@ -88,7 +92,7 @@ describe("ConstraintsDrawer", () => {
 
   it("the active build size pill has aria-pressed='true'", () => {
     renderDrawer({ buildSize: 3 });
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    openDrawer();
     expect(screen.getByRole("button", { name: "3" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByRole("button", { name: "1" }).getAttribute("aria-pressed")).toBe("false");
   });
@@ -96,7 +100,7 @@ describe("ConstraintsDrawer", () => {
   it("clicking an inactive pill calls actions.setBuildSize with that value", () => {
     const setBuildSize = vi.fn();
     renderDrawer({}, { setBuildSize });
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    openDrawer();
     fireEvent.click(screen.getByRole("button", { name: "2" }));
     expect(setBuildSize).toHaveBeenCalledWith(2);
   });
@@ -114,7 +118,7 @@ describe("ConstraintsDrawer", () => {
 
   it("pills with value below pinnedCount are disabled", () => {
     renderDrawer({ buildSize: 3 }, {}, { pinnedCount: 2 });
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    openDrawer();
     expect((screen.getByRole("button", { name: "1" }) as HTMLButtonElement).disabled).toBe(true);
     expect((screen.getByRole("button", { name: "2" }) as HTMLButtonElement).disabled).toBe(false);
     expect((screen.getByRole("button", { name: "3" }) as HTMLButtonElement).disabled).toBe(false);
@@ -122,63 +126,140 @@ describe("ConstraintsDrawer", () => {
 
   it("pills with value equal to or above pinnedCount are enabled", () => {
     renderDrawer({ buildSize: 4 }, {}, { pinnedCount: 2 });
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    openDrawer();
     expect((screen.getByRole("button", { name: "2" }) as HTMLButtonElement).disabled).toBe(false);
     expect((screen.getByRole("button", { name: "3" }) as HTMLButtonElement).disabled).toBe(false);
     expect((screen.getByRole("button", { name: "4" }) as HTMLButtonElement).disabled).toBe(false);
   });
 });
 
-describe("Category filters", () => {
-  it("renders Include and Exclude buttons for each available category when drawer is open", () => {
-    renderDrawer({}, {}, { availableCategories: ["chasing", "adaptation"] });
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    expect(screen.getByRole("button", { name: /only randomise from chasing/i })).not.toBeNull();
-    expect(screen.getByRole("button", { name: /exclude chasing/i })).not.toBeNull();
-    expect(screen.getByRole("button", { name: /only randomise from adaptation/i })).not.toBeNull();
-    expect(screen.getByRole("button", { name: /exclude adaptation/i })).not.toBeNull();
+describe("Pool status line", () => {
+  it("shows the live eligible-perk count", () => {
+    renderDrawer({}, {}, { eligibleCount: 23 });
+    openDrawer();
+    expect(screen.getByText(/23 perks eligible for randomising/i)).not.toBeNull();
   });
 
-  it("clicking Include calls toggleCategory with the category and 'include'", () => {
-    const toggleCategory = vi.fn();
-    renderDrawer({}, { toggleCategory }, { availableCategories: ["chasing"] });
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    fireEvent.click(screen.getByRole("button", { name: /only randomise from chasing/i }));
-    expect(toggleCategory).toHaveBeenCalledWith("chasing", "include");
+  it("uses singular phrasing for one eligible perk", () => {
+    renderDrawer({}, {}, { eligibleCount: 1 });
+    openDrawer();
+    expect(screen.getByText(/1 perk eligible for randomising/i)).not.toBeNull();
   });
 
-  it("clicking Exclude calls toggleCategory with the category and 'exclude'", () => {
-    const toggleCategory = vi.fn();
-    renderDrawer({}, { toggleCategory }, { availableCategories: ["chasing"] });
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    fireEvent.click(screen.getByRole("button", { name: /exclude chasing/i }));
-    expect(toggleCategory).toHaveBeenCalledWith("chasing", "exclude");
-  });
-
-  it("Include button has aria-pressed='true' when filter is 'include', 'false' otherwise", () => {
-    renderDrawer(
-      { categoryFilters: { chasing: "include" } },
-      {},
-      { availableCategories: ["chasing"] },
-    );
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    expect(screen.getByRole("button", { name: /only randomise from chasing/i }).getAttribute("aria-pressed")).toBe("true");
-    expect(screen.getByRole("button", { name: /exclude chasing/i }).getAttribute("aria-pressed")).toBe("false");
-  });
-
-  it("Exclude button has aria-pressed='true' when filter is 'exclude', 'false' otherwise", () => {
-    renderDrawer(
-      { categoryFilters: { chasing: "exclude" } },
-      {},
-      { availableCategories: ["chasing"] },
-    );
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    expect(screen.getByRole("button", { name: /exclude chasing/i }).getAttribute("aria-pressed")).toBe("true");
-    expect(screen.getByRole("button", { name: /only randomise from chasing/i }).getAttribute("aria-pressed")).toBe("false");
+  it("shows the constraint error instead of the count when present", () => {
+    renderDrawer({}, {}, { constraintError: "2 perks eligible, need 4" });
+    openDrawer();
+    expect(screen.getByText("2 perks eligible, need 4")).not.toBeNull();
+    expect(screen.queryByText(/eligible for randomising/i)).toBeNull();
   });
 });
 
-describe("Reset button", () => {
+describe("Category filters", () => {
+  const categories = { availableCategories: ["chasing", "adaptation"] };
+
+  it("renders the three mode radios with full-sentence category labels", () => {
+    renderDrawer({}, {}, categories);
+    openDrawer();
+    expect(screen.getByRole("radio", { name: /pick from all categories/i })).not.toBeNull();
+    expect(screen.getByRole("radio", { name: /only use selected categories/i })).not.toBeNull();
+    expect(screen.getByRole("radio", { name: /avoid selected categories/i })).not.toBeNull();
+  });
+
+  it("defaults to 'Pick from all' with the checkboxes disabled", () => {
+    renderDrawer({}, {}, categories);
+    openDrawer();
+    expect((screen.getByRole("radio", { name: /pick from all categories/i }) as HTMLInputElement).checked).toBe(true);
+    expect((screen.getByRole("checkbox", { name: "chasing" }) as HTMLInputElement).disabled).toBe(true);
+    expect((screen.getByRole("checkbox", { name: "adaptation" }) as HTMLInputElement).disabled).toBe(true);
+  });
+
+  it("selecting 'Only use selected' enables the checkboxes", () => {
+    renderDrawer({}, {}, categories);
+    openDrawer();
+    fireEvent.click(screen.getByRole("radio", { name: /only use selected categories/i }));
+    expect((screen.getByRole("checkbox", { name: "chasing" }) as HTMLInputElement).disabled).toBe(false);
+  });
+
+  it("ticking a checkbox in 'only' mode calls toggleCategory with 'include'", () => {
+    const toggleCategory = vi.fn();
+    renderDrawer({}, { toggleCategory }, categories);
+    openDrawer();
+    fireEvent.click(screen.getByRole("radio", { name: /only use selected categories/i }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "chasing" }));
+    expect(toggleCategory).toHaveBeenCalledWith("chasing", "include");
+  });
+
+  it("ticking a checkbox in 'avoid' mode calls toggleCategory with 'exclude'", () => {
+    const toggleCategory = vi.fn();
+    renderDrawer({}, { toggleCategory }, categories);
+    openDrawer();
+    fireEvent.click(screen.getByRole("radio", { name: /avoid selected categories/i }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "chasing" }));
+    expect(toggleCategory).toHaveBeenCalledWith("chasing", "exclude");
+  });
+
+  it("an existing include filter derives the 'only' mode and ticks the box", () => {
+    renderDrawer({ categoryFilters: { chasing: "include" } }, {}, categories);
+    openDrawer();
+    expect((screen.getByRole("radio", { name: /only use selected categories/i }) as HTMLInputElement).checked).toBe(true);
+    expect((screen.getByRole("checkbox", { name: "chasing" }) as HTMLInputElement).checked).toBe(true);
+    expect((screen.getByRole("checkbox", { name: "adaptation" }) as HTMLInputElement).checked).toBe(false);
+  });
+
+  it("an existing exclude filter derives the 'avoid' mode and ticks the box", () => {
+    renderDrawer({ categoryFilters: { chasing: "exclude" } }, {}, categories);
+    openDrawer();
+    expect((screen.getByRole("radio", { name: /avoid selected categories/i }) as HTMLInputElement).checked).toBe(true);
+    expect((screen.getByRole("checkbox", { name: "chasing" }) as HTMLInputElement).checked).toBe(true);
+  });
+
+  it("switching from 'only' to 'avoid' converts every selection to exclude", () => {
+    const toggleCategory = vi.fn();
+    renderDrawer(
+      { categoryFilters: { chasing: "include", adaptation: "include" } },
+      { toggleCategory },
+      categories,
+    );
+    openDrawer();
+    fireEvent.click(screen.getByRole("radio", { name: /avoid selected categories/i }));
+    expect(toggleCategory).toHaveBeenCalledWith("chasing", "exclude");
+    expect(toggleCategory).toHaveBeenCalledWith("adaptation", "exclude");
+  });
+
+  it("switching back to 'Pick from all' clears every active filter", () => {
+    const toggleCategory = vi.fn();
+    renderDrawer(
+      { categoryFilters: { chasing: "include" } },
+      { toggleCategory },
+      categories,
+    );
+    openDrawer();
+    fireEvent.click(screen.getByRole("radio", { name: /pick from all categories/i }));
+    // Toggling with the current value resets the filter to neutral.
+    expect(toggleCategory).toHaveBeenCalledWith("chasing", "include");
+  });
+
+  it("status line spells out an 'only' selection", () => {
+    renderDrawer({ categoryFilters: { chasing: "include" } }, {}, categories);
+    openDrawer();
+    expect(screen.getByText(/only using: chasing/i)).not.toBeNull();
+  });
+
+  it("status line spells out an 'avoid' selection", () => {
+    renderDrawer({ categoryFilters: { adaptation: "exclude" } }, {}, categories);
+    openDrawer();
+    expect(screen.getByText(/avoiding: adaptation/i)).not.toBeNull();
+  });
+
+  it("status line explains that an empty selection still means all categories", () => {
+    renderDrawer({}, {}, categories);
+    openDrawer();
+    fireEvent.click(screen.getByRole("radio", { name: /only use selected categories/i }));
+    expect(screen.getByText(/nothing ticked — still picking from all categories/i)).not.toBeNull();
+  });
+});
+
+describe("Reset", () => {
   it("Reset button appears when activeConstraintCount > 0", () => {
     renderDrawer({}, {}, { activeConstraintCount: 2 });
     expect(screen.getByRole("button", { name: /reset/i })).not.toBeNull();
@@ -195,12 +276,22 @@ describe("Reset button", () => {
     fireEvent.click(screen.getByRole("button", { name: /reset/i }));
     expect(resetConstraints).toHaveBeenCalledOnce();
   });
+
+  it("Reset snaps the mode radios back to 'Pick from all'", () => {
+    renderDrawer({}, {}, { activeConstraintCount: 1, availableCategories: ["chasing"] });
+    openDrawer();
+    fireEvent.click(screen.getByRole("radio", { name: /only use selected categories/i }));
+    expect((screen.getByRole("checkbox", { name: "chasing" }) as HTMLInputElement).disabled).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: /reset/i }));
+    expect((screen.getByRole("radio", { name: /pick from all categories/i }) as HTMLInputElement).checked).toBe(true);
+    expect((screen.getByRole("checkbox", { name: "chasing" }) as HTMLInputElement).disabled).toBe(true);
+  });
 });
 
 describe("Blacklist / Banned Perks", () => {
   it("renders a chip for each blacklisted perk name when drawer is open", () => {
     renderDrawer({ blacklist: new Set(["Dead Hard", "Adrenaline"]) });
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    openDrawer();
     expect(screen.getByText("Dead Hard")).not.toBeNull();
     expect(screen.getByText("Adrenaline")).not.toBeNull();
   });
@@ -208,75 +299,80 @@ describe("Blacklist / Banned Perks", () => {
   it("clicking the remove button on a chip calls toggleBlacklist with that perk name", () => {
     const toggleBlacklist = vi.fn();
     renderDrawer({ blacklist: new Set(["Dead Hard"]) }, { toggleBlacklist });
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    openDrawer();
     fireEvent.click(screen.getByRole("button", { name: /remove dead hard from blacklist/i }));
     expect(toggleBlacklist).toHaveBeenCalledWith("Dead Hard");
   });
 
   it("no chips rendered when blacklist is empty", () => {
     renderDrawer({ blacklist: new Set() });
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
+    openDrawer();
     expect(screen.queryByText("Banned Perks")).toBeNull();
   });
 });
 
 describe("Character filters", () => {
-  it("renders Include and Exclude buttons for each available character key when drawer is open", () => {
-    renderDrawer(
-      {},
-      {},
-      { availableCharacterKeys: ["base", "1"], getCharacterLabel: (k) => k === "base" ? "Base Perks" : "Dwight" },
-    );
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    expect(screen.getByRole("button", { name: /only randomise from base perks/i })).not.toBeNull();
-    expect(screen.getByRole("button", { name: /exclude base perks/i })).not.toBeNull();
-    expect(screen.getByRole("button", { name: /only randomise from dwight/i })).not.toBeNull();
-    expect(screen.getByRole("button", { name: /exclude dwight/i })).not.toBeNull();
+  const characters = {
+    availableCharacterKeys: ["base", "1"],
+    getCharacterLabel: (k: string) => (k === "base" ? "Base Perks" : "Dwight"),
+  };
+
+  it("renders the three mode radios with full-sentence character labels", () => {
+    renderDrawer({}, {}, characters);
+    openDrawer();
+    expect(screen.getByRole("radio", { name: /pick from all characters/i })).not.toBeNull();
+    expect(screen.getByRole("radio", { name: /only use selected characters/i })).not.toBeNull();
+    expect(screen.getByRole("radio", { name: /avoid selected characters/i })).not.toBeNull();
   });
 
-  it("clicking Include calls toggleCharacter with the key and 'include'", () => {
+  it("renders a labelled checkbox per character", () => {
+    renderDrawer({}, {}, characters);
+    openDrawer();
+    expect(screen.getByRole("checkbox", { name: "Base Perks" })).not.toBeNull();
+    expect(screen.getByRole("checkbox", { name: "Dwight" })).not.toBeNull();
+  });
+
+  it("ticking a character in 'only' mode calls toggleCharacter with 'include'", () => {
     const toggleCharacter = vi.fn();
-    renderDrawer(
-      {},
-      { toggleCharacter },
-      { availableCharacterKeys: ["1"], getCharacterLabel: () => "Dwight" },
-    );
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    fireEvent.click(screen.getByRole("button", { name: /only randomise from dwight/i }));
+    renderDrawer({}, { toggleCharacter }, characters);
+    openDrawer();
+    fireEvent.click(screen.getByRole("radio", { name: /only use selected characters/i }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Dwight" }));
     expect(toggleCharacter).toHaveBeenCalledWith("1", "include");
   });
 
-  it("clicking Exclude calls toggleCharacter with the key and 'exclude'", () => {
+  it("ticking a character in 'avoid' mode calls toggleCharacter with 'exclude'", () => {
     const toggleCharacter = vi.fn();
-    renderDrawer(
-      {},
-      { toggleCharacter },
-      { availableCharacterKeys: ["1"], getCharacterLabel: () => "Dwight" },
-    );
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    fireEvent.click(screen.getByRole("button", { name: /exclude dwight/i }));
+    renderDrawer({}, { toggleCharacter }, characters);
+    openDrawer();
+    fireEvent.click(screen.getByRole("radio", { name: /avoid selected characters/i }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Dwight" }));
     expect(toggleCharacter).toHaveBeenCalledWith("1", "exclude");
   });
 
-  it("Include button has aria-pressed='true' when character filter is 'include'", () => {
+  it("an existing include filter derives the 'only' mode and names the character in the status line", () => {
+    renderDrawer({ characterFilters: { "1": "include" } }, {}, characters);
+    openDrawer();
+    expect((screen.getByRole("radio", { name: /only use selected characters/i }) as HTMLInputElement).checked).toBe(true);
+    expect((screen.getByRole("checkbox", { name: "Dwight" }) as HTMLInputElement).checked).toBe(true);
+    expect(screen.getByText(/only using: dwight/i)).not.toBeNull();
+  });
+
+  it("an existing exclude filter derives the 'avoid' mode and names the character in the status line", () => {
+    renderDrawer({ characterFilters: { "1": "exclude" } }, {}, characters);
+    openDrawer();
+    expect((screen.getByRole("radio", { name: /avoid selected characters/i }) as HTMLInputElement).checked).toBe(true);
+    expect(screen.getByText(/avoiding: dwight/i)).not.toBeNull();
+  });
+
+  it("category and character sections have independent modes", () => {
     renderDrawer(
       { characterFilters: { "1": "include" } },
       {},
-      { availableCharacterKeys: ["1"], getCharacterLabel: () => "Dwight" },
+      { ...characters, availableCategories: ["chasing"] },
     );
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    expect(screen.getByRole("button", { name: /only randomise from dwight/i }).getAttribute("aria-pressed")).toBe("true");
-    expect(screen.getByRole("button", { name: /exclude dwight/i }).getAttribute("aria-pressed")).toBe("false");
-  });
-
-  it("Exclude button has aria-pressed='true' when character filter is 'exclude'", () => {
-    renderDrawer(
-      { characterFilters: { "1": "exclude" } },
-      {},
-      { availableCharacterKeys: ["1"], getCharacterLabel: () => "Dwight" },
-    );
-    fireEvent.click(screen.getByRole("button", { name: /constraints/i }));
-    expect(screen.getByRole("button", { name: /exclude dwight/i }).getAttribute("aria-pressed")).toBe("true");
-    expect(screen.getByRole("button", { name: /only randomise from dwight/i }).getAttribute("aria-pressed")).toBe("false");
+    openDrawer();
+    expect((screen.getByRole("radio", { name: /only use selected characters/i }) as HTMLInputElement).checked).toBe(true);
+    expect((screen.getByRole("radio", { name: /pick from all categories/i }) as HTMLInputElement).checked).toBe(true);
   });
 });
